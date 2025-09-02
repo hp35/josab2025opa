@@ -1,0 +1,3793 @@
+%
+% File: pulsedopo/base/pulsedopo.tex [plain TeX code]
+% Last change: January 9, 2025
+%
+% Derivation of the equations governing pulse propagation in optical
+% parametric amplification/oscillation (OPA/OPO) processes in the presence
+% of optical activity and dispersion.
+%
+% Copyright (C) 2025, Fredrik Jonsson, under GPL 3.0. See enclosed LICENSE.
+%
+\input macros/epsf.tex
+\input macros/eplain.tex
+\font\ninerm=cmr9
+\font\twentyrm=cmr12 at 20 truept
+\font\twelvesc=cmcsc10 at 12 truept
+\input amssym % to get the {\Bbb E} font (strikethrough E)
+\def\captionwide{\advance\leftskip by 60pt
+  \advance\rightskip by 60pt}
+\def\document #1 {\hsize=150mm\hoffset=4.6mm\vsize=230mm\voffset=7mm
+  \topskip=0pt\baselineskip=12pt\parskip=0pt\leftskip=0pt\parindent=15pt
+  \headline={\ifnum\pageno>1\ifodd\pageno\rightheadline\else\leftheadline\fi
+    \else\hfill\fi}
+  \def\rightheadline{\tenrm{\it #1}
+    \hfil{\it\date}}
+  \def\leftheadline{\tenrm{\it\date}
+    \hfil{\it #1}}
+  \noindent~\vskip-60pt\hskip-40pt{\epsfbox{macros/UU_logo_color.eps}}
+  \vskip-42pt\hfill\vbox{\hbox{{\it\author}}
+  \hbox{{\it\date}}}\vskip 36pt
+  \centerline{\twelvesc #1}
+  \vskip 24pt\noindent}
+\def\section #1 {\bigskip\goodbreak\noindent{\bf #1}
+  \par\nobreak\smallskip\noindent}
+\def\subsection #1 {\bigskip\goodbreak\noindent{\it #1}
+  \par\nobreak\smallskip\noindent}
+\def\iint{\mathop{\int\kern-8pt\int}}
+\def\iiint{\mathop{\int\kern-8pt\int\kern-8pt\int}}
+\def\oiint{\mathop{\int\kern-8pt\int\kern-13.2pt{\bigcirc}}}
+\def\Re{\mathop{\rm Re}\nolimits} % real part
+\def\Im{\mathop{\rm Im}\nolimits} % imaginary part
+\def\Tr{\mathop{\rm Tr}\nolimits} % quantum mechanical trace
+\def\fourier{\mathop{\frak F}\nolimits}
+\def\eqq{\mathop{\vbox{\hbox{\hskip2pt?}\vskip-6pt\hbox{=}}}}
+
+%
+% Blackboard bold fonts.
+%
+\font\mbb=msbm10 
+\newfam\bbb
+\textfont\bbb=\mbb
+
+%
+% Define in which way we want displayed equation numbers to appear in
+% the text. In this case, it is preferred to have the equation numbers
+% as one single running index, rather than the form otherwise commonly
+% found format used in books, (<chapter number>.<equation number>).
+%
+\def\eqconstruct#1{#1}
+
+%
+% Define in which way we want displayed subequation numbers
+% to appear in the text.
+%
+\newcount\subref
+\def\eqsubreftext#1#2{%
+  \subref = #2           % The space stops a <number>.
+  \advance\subref by 96  % `a' is character code 97.
+  #1{\rm\char\subref}%
+}
+
+%
+% Define the 'boxit' macro from D.E. Knuths "The TeXbook, Exercise 21.3.
+%
+\def\boxit#1{\vbox{\hrule\hbox{\vrule\kern3pt
+  \vbox{\kern3pt#1\kern3pt}\kern3pt\vrule}\hrule}}
+
+\def\date{January 9, 2025}
+\def\author{Fredrik Jonsson}
+\document{Pulse propagation in chiral optical parametric processes}
+\vskip24pt
+
+\section{Conventions for the complex-valued fields}
+Throughout this analysis, we stick to the convention that the real-valued
+electric field ${\bf E}({\bf r},t)$ and polarization density
+${\bf P}({\bf r},t)={\bf P}^{({\rm L})}({\bf r},t)+{\bf P}^{({\rm L})}({\bf r},t)$
+are defined in terms of the slowly-varying complex-valued electric field
+envelope ${\bf E}_{\omega}({\bf r},t)$ and polarization density envelope
+${\bf P}_{\omega}({\bf r},t)$ as
+$$
+  \eqalignno{
+    {\bf E}({\bf r},t)
+      &=\sum_{\omega_{\sigma}}{\rm Re}[
+           {\bf E}_{\omega_{\sigma}}({\bf r},t)\exp(-i\omega_{\sigma}t)],
+      \eqdefn{eq:fields10}&\eqsubdef{eq:fields10a}\cr
+    {\bf P}({\bf r},t)
+      &=\sum_{\omega_{\sigma}}{\rm Re}[
+           {\bf P}_{\omega_{\sigma}}({\bf r},t)\exp(-i\omega_{\sigma}t)]\cr
+      &=\sum_{\omega_{\sigma}}{\rm Re}[
+           ({\bf P}^{({\rm L})}_{\omega_{\sigma}}({\bf r},t)
+             +{\bf P}^{({\rm NL})}_{\omega_{\sigma}}({\bf r},t))
+           \exp(-i\omega_{\sigma}t)],
+      &\eqsubdef{eq:fields10b}\cr
+}
+$$
+where the complex-valued envelope ${\bf P}^{({\rm L})}_{\omega_{\sigma}}({\bf r},t)$
+contains a constitutive description of all terms linear in the electric field
+strength and ${\bf P}^{({\rm NL})}_{\omega_{\sigma}}({\bf r},t)$ all nonlinear terms.
+
+\section{The linear part of the constitutive relation}
+The starting point in the analysis is the wave equation for the propagation of
+electromagnetic waves in chiral media, with the linear part of the electric
+polarization density given as
+$$
+  {\bf P}^{(L)}({\bf r},t)=\varepsilon_0{\bf e}_{\mu}
+    \int^{\infty}_{-\infty}\Big(
+      \chi_{\mu\alpha}(-\omega;\omega)
+      +\gamma_{\mu\alpha\beta}(-\omega;\omega){{\partial}\over{\partial x_{\beta}}}
+    \Big)E_{\alpha}({\bf r},\omega)\exp(-i\omega t)\,d\omega.
+$$
+In this standard form, $\chi_{\mu\alpha}$ is the linear susceptibility tensor due
+to electric dipolar interactions, while $\gamma_{\mu\alpha\beta}$ is the gyration
+tensor due to electric quadrupolar interactions.
+
+\section{The governing wave equation}
+With the constitutive relation for the linear polarization density as above,
+the nonlinear wave equation for the propagation, including the nonlinear part
+of the electric polarization density ${\bf P}^{({\rm NL})}$ in the complex-valued
+form
+$$
+  \eqalign{
+    &
+    \nabla\times\nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+      -{\bf e}_{\mu}
+        \Big(
+          k^2_{\mu\alpha}(\omega_{\sigma})
+            +id_{\mu\alpha}(\omega_{\sigma}){{\partial}\over{\partial t}}
+            -e_{\mu\alpha}(\omega_{\sigma}){{\partial^2}\over{\partial t^2}}
+        \Big) E^{\alpha}_{\omega_{\sigma}}({\bf r},t)
+      =\mu_0\omega^2_{\sigma}{\bf P}^{({\rm NL})}_{\omega_{\sigma}}({\bf r},t)\cr
+  }
+  \eqdef{eq:waveeq10}
+$$
+where the dispersive coefficients are given in their tensor form as
+$$
+  \eqalign{
+    d_{\mu\alpha}&=d_{\mu\alpha}(\omega_{\sigma})
+      \equiv 2k_{\mu\alpha}(\omega_{\sigma})
+      {{d k_{\mu\alpha}}\over{d\omega}}\Big|_{\omega_{\sigma}},
+      \qquad\hbox{(no sum)}\cr
+    e_{\mu\alpha}&=e_{\mu\alpha}(\omega_{\sigma})
+      \equiv k_{\mu\alpha}(\omega_{\sigma})
+      {{d^2 k_{\mu\alpha}}\over{d\omega^2}}\Big|_{\omega_{\sigma}},
+      \qquad\hbox{(no sum)}\cr
+  }
+$$
+and where the tensor form of the wave vector $k_{\mu\alpha}(\omega)$ is defined as
+$$
+  k^2_{\mu\alpha}(\omega) = {{\omega^2}\over{c^2}}
+      \Big(
+        \delta_{\mu\alpha}
+          +\chi_{\mu\alpha}(-\omega;\omega)
+          +\gamma_{\mu\alpha\beta}(-\omega;\omega)
+             {{\partial}\over{\partial x_{\beta}}}
+      \Big).
+  \eqdef{eq:waveeq12}
+$$
+Here the derivative is to be interpreted as the result of derivation of the
+electric field, or ``the corresponding wave vector $\beta-$component of the
+electric field''.
+
+\section{Infinite plane wave approximation}
+For the case of infinite plane waves, we may replace
+$$
+  \nabla\times\nabla\times\to-\nabla^2\to-{{d^2}\over{dz^2}},
+$$
+reducing Eq.~\eqref{eq:waveeq10} to
+$$
+  {\bf e}_{\mu}
+  {{\partial^2 E^{\mu}_{\omega_{\sigma}}(z,t)}\over{\partial z^2}}
+    +{\bf e}_{\mu}
+      \Big(
+        k^2_{\mu\alpha}(\omega_{\sigma})
+          +id_{\mu\alpha}(\omega_{\sigma}){{\partial}\over{\partial t}}
+          -e_{\mu\alpha}(\omega_{\sigma}){{\partial^2}\over{\partial t^2}}
+      \Big)
+      E^{\alpha}_{\omega_{\sigma}}(z,t)
+    = -\mu_0\omega^2_{\sigma}{\bf P}^{({\rm NL})}_{\omega_{\sigma}}(z,t),
+  \eqdef{eq:waveeq20}
+$$
+where we should keep in mind that the linear chirality is included in the
+definition of $k^2_{\mu\alpha}$ in Eq.~\eqref{eq:waveeq12}, and that repeated
+indices should be interpreted under the Einstein convention of summation,
+here over the coordinates $\mu=x,y,z$.
+
+As we will see in the following treatment, in Eq.~\eqref{eq:waveeq20} the term
+with an explicit $k^2_{\mu\alpha}(\omega_{\sigma})$ as coefficient governs the
+{\it phase velocity} in the medium in the vicinity of the centre angular
+frequency $\omega_{\sigma}$, while the term with $d_{\mu\alpha}(\omega_{\sigma})$
+as coefficient determines the {\it group velocity} $v_g=(\partial k_{\mu\omega}
+/\partial\omega)^{-1}$, and finally the term with $e_{\mu\alpha}(\omega_{\sigma})$
+as coefficient determines the {\it group velocity dispersion} in the medium.
+
+\section{The wave vector and chiral dispersion coefficients}
+If we assume that the contribution to the dispersion\numberedfootnote{In other
+  words the dependence of the material parameter with respect to the angular
+  frequency of light around a centre frequency $\omega_{\sigma}$.
+  This dispersion, which is the primary cause for pulse broadening,
+  should here not be confused by the wider concept of dispersion which
+  is the cause for the, say, medium at the idler, signal and pump
+  frequencies $(\omega_{\rm i},\omega_{\rm s},\omega_{\rm p})$ of a
+  parametric process to possess different refractive indices, forming
+  the basis of a potential phase mismatch.}
+from the gyration tensor $\gamma_{\mu\alpha\beta}(-\omega;\omega)$ is negligible
+compared to the dispersion of the linear electric dipolar susceptibility
+$\chi_{\mu\alpha}(-\omega;\omega)$, we may express the coefficients of the
+linear term of the wave equation in terms of the relative dielectric
+permittivity from the dipolar interaction,
+$$
+  \varepsilon_{\mu\alpha}(\omega)
+    \equiv\delta_{\mu\alpha}+\chi_{\mu\alpha}(-\omega;\omega),
+$$
+as
+$$
+  \eqalign{
+    k_{\mu\alpha}(\omega)
+      &= {{\omega}\over{c}}
+        \Big(
+          \varepsilon_{\mu\alpha}(\omega)
+            +\gamma_{\mu\alpha\beta}(-\omega;\omega)
+               {{\partial}\over{\partial x_{\beta}}}
+        \Big)^{1/2}\cr
+      &= {{\omega}\over{c}}\varepsilon^{1/2}_{\mu\alpha}(\omega)
+        \Big(1+{{\gamma_{\mu\alpha\beta}(-\omega;\omega)}
+               \over{\varepsilon_{\mu\alpha}(\omega)}}
+               {{\partial}\over{\partial x_{\beta}}}
+        \Big)^{1/2}\cr
+        &=\big\{\hbox{$(1+\epsilon)^{1/2}\approx 1+\epsilon/2$,
+                      if $\epsilon\ll 1$}\big\}\cr
+      &\approx
+    {{\omega}\over{c}}\varepsilon^{1/2}_{\mu\alpha}(\omega)
+          +{{1}\over{2}}{{\omega}\over{c}}
+            {{\gamma_{\mu\alpha\beta}(-\omega;\omega)}
+               \over{\varepsilon^{1/2}_{\mu\alpha}(\omega)}}
+            {{\partial}\over{\partial x_{\beta}}}.\cr
+  }
+  \eqdef{eq:wavevec10}
+$$
+In other words, in the nomenclature here used, we exclude any nonlocal or
+magnetic fipolar interaction from the concept of the electric permittivity
+$\varepsilon_{\mu\alpha}$, and keep this entirely as a placeholder for electric
+dipolar interactions. By defining the effective gyration coefficient as
+$$
+  g_{\mu\alpha\beta}(\omega)\equiv
+    {{\gamma_{\mu\alpha\beta}(-\omega;\omega)}
+      \over{2\varepsilon^{1/2}_{\mu\alpha}(\omega)}},\qquad\hbox{(no sum)}
+  \eqdef{eq:wavevec20}
+$$
+the wavevector $k_{\mu\alpha}$ (phase velocity) and derived dispersive
+coefficients $d_{\mu\alpha}$ (group velocity) and $e_{\mu\alpha}$ (group
+velocity dispersion) may hence be expressed as
+$$
+  \eqalignno{
+    k_{\mu\alpha}(\omega_{\sigma})
+      &\approx{{\omega_{\sigma}}\over{c}}
+         \bigg(
+           \varepsilon^{1/2}_{\mu\alpha}(\omega_{\sigma})
+              +g_{\mu\alpha\beta}(\omega_{\sigma})
+                 {{\partial}\over{\partial x_{\beta}}}
+         \bigg),
+      \eqdefn{eq:wavevec30}&\eqsubdef{eq:wavevec30a}\cr
+    d_{\mu\alpha}(\omega_{\sigma})
+      &\equiv 2k_{\mu\alpha}(\omega_{\sigma})
+      {{d k_{\mu\alpha}(\omega)}\over{d\omega}}|_{\omega_{\sigma}}
+      \qquad\hbox{(no sum)}\cr
+      &\approx 2
+      \underbrace{
+        {{\omega}\over{c}}
+         \bigg(
+           \varepsilon^{1/2}_{\mu\alpha}(\omega_{\sigma})
+             +g_{\mu\alpha\beta}(\omega_{\sigma}){{\partial}\over{\partial x_{\beta}}}
+         \bigg)}_{k_{\mu\alpha}(\omega_{\sigma})}
+      {{d}\over{d\omega}}
+      \underbrace{
+      \bigg(
+        {{\omega}\over{c}}
+          \bigg(
+            \varepsilon^{1/2}_{\mu\alpha}(\omega)
+              +g_{\mu\alpha\beta}(\omega){{\partial}\over{\partial x_{\beta}}}
+          \bigg)
+      \bigg)}_{k_{\mu\alpha}(\omega)}\bigg|_{\omega_{\sigma}},
+      \ \hbox{(no sum)}\qquad
+      &\eqsubdef{eq:wavevec30b}\cr
+    e_{\mu\alpha}(\omega_{\sigma})
+      &\equiv k_{\mu\alpha}(\omega_{\sigma})
+      {{d^2 k_{\mu\alpha}(\omega)}\over{d\omega^2}}|_{\omega_{\sigma}}
+      \qquad\hbox{(no sum)}\cr
+      &\approx
+      \underbrace{
+        {{\omega}\over{c}}
+         \bigg(
+           \varepsilon^{1/2}_{\mu\alpha}(\omega_{\sigma})
+             +g_{\mu\alpha\beta}(\omega_{\sigma}){{\partial}\over{\partial x_{\beta}}}
+         \bigg)}_{k_{\mu\alpha}(\omega_{\sigma})}
+      {{d^2}\over{d\omega^2}}
+      \underbrace{
+      \bigg(
+        {{\omega}\over{c}}
+          \bigg(
+            \varepsilon^{1/2}_{\mu\alpha}(\omega)
+              +g_{\mu\alpha\beta}(\omega){{\partial}\over{\partial x_{\beta}}}
+          \bigg)
+      \bigg)}_{k_{\mu\alpha}(\omega)}\bigg|_{\omega_{\sigma}}.
+      \ \hbox{(no sum)}\qquad
+      &\eqsubdef{eq:wavevec30c}
+  }
+$$
+Again, it should be emphasized that in the case of an otherwise isotropic
+medium, the square root of the relative electric-dipolar part of the
+permittivity, $\varepsilon^{1/2}_{\mu\alpha}(\omega)$, should be interpreted
+as the regular electric-dipolar part of the refractive index $n(\omega)$.%
+\numberedfootnote{
+  If we neglect the chiral nature of the dispersion coefficients, that is
+  to say, by ignoring the gyration coefficients $g_{\mu\alpha\beta}$ inside
+  the derivatives in $\omega$, we obtain the simplified coefficients for
+  the group velocity and group velocity dispersion as
+  $$
+    \eqalign{
+      d_{\mu\alpha}(\omega_{\sigma})
+        &\approx 2{{\omega_{\sigma}}\over{c}}
+        \bigg(
+          \varepsilon^{1/2}_{\mu\alpha}(\omega_{\sigma})
+            +g_{\mu\alpha\beta}(\omega_{\sigma}){{\partial}\over{\partial x_{\beta}}}
+        \bigg)
+        {{d}\over{d\omega}}
+        \bigg(
+          {{\omega\varepsilon^{1/2}_{\mu\alpha}(\omega)}\over{c}}
+        \bigg)\bigg|_{\omega_{\sigma}},
+        \qquad\hbox{(no sum)}\cr
+      e_{\mu\alpha}(\omega_{\sigma})
+        &\approx {{\omega_{\sigma}}\over{c}}
+        \bigg(
+          \varepsilon^{1/2}_{\mu\alpha}(\omega_{\sigma})
+            +g_{\mu\alpha\beta}(\omega_{\sigma}){{\partial}\over{\partial x_{\beta}}}
+        \bigg)
+        {{d^2}\over{d\omega^2}}
+        \bigg(
+          {{\omega\varepsilon^{1/2}_{\mu\alpha}(\omega)}\over{c}}
+        \bigg)\bigg|_{\omega_{\sigma}}.
+        \qquad\hbox{(no sum)}\cr
+    }
+  $$
+  However tempting this simplification is, we would in this case unfortunately
+  loose any correction to the group velocity and group velocity dispersion
+  from the chirality, and the only way the chirality would manifest itself
+  would be through the phase velocity, hence ignoring and difference in
+  temporal pulse walk-off between, say, LCP and RCP modes. In order to keep
+  generality, we should hence try to keep the gyration coefficients in the
+  analysis as far as possible.
+}
+
+\section{Choice of medium}
+By furthermore applying the symmetries of a certain medium to the form
+of the susceptibilities, we may put the wave equation in a concrete form,
+considering the previously outlined approximations.
+By choosing a medium belonging to point-symmetry group 32 (trigonal),
+the linear polar (local) susceptibility tensor consists of three non-zero
+elements of which two are independent,
+$$
+  \eqalign{
+    \chi_{xx}&=\chi_{yy},\qquad\chi_{zz}\cr
+  }
+  \eqdef{eq:chi10}
+$$
+while the second-order, rank-three polar susceptibility tensor (governing the
+optical parametric process) consists of ten non-zero elements of which four
+are independent,
+$$
+  \eqalign{
+    \chi_{xxx}&=-\chi_{xyy}=-\chi_{yxy}=-\chi_{yyx},\cr
+    \chi_{xyz}&=-\chi_{yxz},\qquad
+    \chi_{xzy}=-\chi_{yzx},\qquad
+    \chi_{zxy}=-\chi_{zyx},\cr
+  }
+  \eqdef{eq:chi20}
+$$
+In similar, the chiral properties are described by axial (non-local) tensors,
+for which the linear chiral rank-three tensor $\gamma_{\mu\alpha\beta}$ governing
+the gyrotropy consists of exactly the same set of nonzero elements as
+the all-electric dipolar $\chi_{\mu\alpha\beta}$,
+$$
+  \eqalign{
+    \gamma_{xxx}&=-\gamma_{xyy}=-\gamma_{yxy}=-\gamma_{yyx},\cr
+    \gamma_{xyz}&=-\gamma_{yxz},\qquad
+    \gamma_{xzy}=-\gamma_{yzx},\qquad
+    \gamma_{zxy}=-\gamma_{zyx},\cr
+  }
+  \eqdef{eq:gamma10}
+$$
+while the rank-four axial susceptibility tensor (governing the chiral
+contribution to the optical parametric process) consists of 37 non-zero
+elements of which 14 are independent,
+$$
+  \eqalign{
+    \gamma_{xxxx}&=\gamma_{yyyy}\cr
+    \gamma_{xxyy}&=\gamma_{yyxx}\cr
+    \gamma_{xyxy}&=\gamma_{yxyx}\cr
+                &=-\gamma_{xyyx}-\gamma_{yyxx}+\gamma_{yyyy}\cr
+                &=-\gamma_{yxxy}-\gamma_{yyxx}+\gamma_{yyyy}\cr
+    \gamma_{xxyz}&=-\gamma_{yyyz}=\gamma_{xyxz}=\gamma_{yxxz}\cr
+    \gamma_{xxzx}&=-\gamma_{yyzy}=\gamma_{xyzx}=\gamma_{yxzx}\cr
+    \gamma_{xxzz}&=\gamma_{yyzz}\cr
+    \gamma_{xzxy}&=-\gamma_{yzyy}=\gamma_{xzyx}=\gamma_{yzxx}\cr
+    \gamma_{xzxz}&=\gamma_{yzyz}\cr
+    \gamma_{xzzx}&=\gamma_{yzzy}\cr
+    \gamma_{zxxy}&=-\gamma_{zyyy}=\gamma_{zxyx}=\gamma_{zyxx}\cr
+    \gamma_{zxxz}&=\gamma_{zyyz}\cr
+    \gamma_{zxzx}&=\gamma_{zyzy}\cr
+    \gamma_{zzxx}&=\gamma_{zzyy}\cr
+    \gamma_{zzzz}&=\hbox{indep.}\cr
+  }
+  \eqdef{eq:gamma20}
+$$
+Since we here consider the propagation along the $z$-axis of infinite plane
+waves in the $(x,y)$-plane, the only tensor elements which here will be of
+importance in the sets listed above are the electric dipolar components
+$$
+  \chi_{xx}=\chi_{yy},\qquad
+  \chi_{xxx}=-\chi_{xyy}=-\chi_{yxy}=-\chi_{yyx},
+  \eqdef{eq:chi30}
+$$
+and the electric quadrupolar, or chiral, components
+$$
+  \gamma_{xyz}=-\gamma_{yxz},\qquad
+  \gamma_{xxyz}=-\gamma_{yyyz}=\gamma_{xyxz}=\gamma_{yxxz}.
+  \eqdef{eq:gamma30}
+$$
+In order to sort out things in order, we will in the following make a brief
+pre-work before compiling the complete linear and nonlinear polarization
+densities originating from this set of elements of the susceptibility tensors.
+
+\subsection{Phase velocity terms in the 32 (trigonal) medium}
+When applied to the dispersive terms in Eq.~\eqref{eq:waveeq20}, given their
+form provided by Eqs.~\eqref{eq:wavevec10}--\eqref{eq:wavevec30} and an
+electric field strength arbitrarily polarized in the $(x,y)$-plane, orthogonal
+to the direction of propagation along the rotational symmetry axis of the 32
+(trigonal) medium, this set of susceptibility tensor elements results in
+$$
+  {\bf e}_{\mu}k^2_{\mu\alpha}(\omega_{\sigma})E^{\alpha}_{\omega_{\sigma}}({\bf r},t)
+    ={{\omega^2 n^2(\omega)}\over{c^2}}{\bf E}_{\omega_{\sigma}}({\bf r},t)
+       -{{\omega^2}\over{c^2}}\gamma_{xyz}(-\omega;\omega)
+          \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+  \eqdef{eq:poldensp10}
+$$
+where $n(\omega)$ is the regular dipolar part of the refractive index, defined
+by
+$$
+  n(\omega)=\big(1+\chi_{xx}(-\omega;\omega)\big)^{1/2}.
+  \eqdef{eq:refind10}
+$$
+From the shape of the terms in the expression provided by
+Eq.~\eqref{eq:poldensp10}, which is governing the phase
+velocity in the medium, we immediately recognize ``$\nabla\times$'' as the
+term which for a field propagating along the $z$-axis of rotational symmetry
+of the 32 (trigonal) medium will contribute an additional, chiral part to the
+regular dipolar refractive index with $\pm$ sign to the orthogonal LCP/RCP
+modes, just as expected.
+
+\subsection{Group velocity terms in the 32 (trigonal) medium}
+In similar, for the first dispersive term with $d_{\mu\alpha}$ as coefficient%
+\numberedfootnote{Again under the assumption of wave propagation along
+  the $z$-axis of rotational symmetry in a medium belonging to the 32
+  (trigonal) point-symmetry group.}
+governing the group velocity, we obtain
+$$
+  \eqalign{
+    {\bf e}_{\mu} d_{\mu\alpha}(\omega_{\sigma})
+     &{{\partial E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+       ={\bf e}_{\mu} 2k_{\mu\alpha}(\omega_{\sigma})
+            {{d k_{\mu\alpha}(\omega)}\over{d\omega}}\Big|_{\omega_{\sigma}}
+            {{\partial E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}\cr
+      &=2{{\omega}\over{c}}
+            \big(n(\omega_{\sigma})-g_{xyz}(\omega_{\sigma})\nabla\times\big)
+          {{d}\over{d\omega}}
+          \bigg(
+            {{\omega}\over{c}}\big(n(\omega)-g_{xyz}(\omega)\nabla\times\big)
+          \bigg)\bigg|_{\omega_{\sigma}}
+          {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}\cr
+      &=2\big(k(\omega_{\sigma})-g(\omega_{\sigma})\nabla\times\big)
+         \big(k'(\omega_{\sigma})-g'(\omega_{\sigma})\nabla\times\big)
+          {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}\cr
+      &=2\big(k(\omega_{\sigma})-g(\omega_{\sigma})\nabla\times\big)
+         \bigg(
+           k'(\omega_{\sigma})
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           -g'(\omega_{\sigma})\nabla\times
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+         \bigg)\cr
+      &=2\bigg(
+           k(\omega_{\sigma})k'(\omega_{\sigma})
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           -g(\omega_{\sigma})k'(\omega_{\sigma})\nabla\times
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+      \cr&\qquad\qquad
+           -k(\omega_{\sigma})g'(\omega_{\sigma})\nabla\times
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           -g(\omega_{\sigma})g'(\omega_{\sigma})\nabla\times\nabla\times
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+         \bigg)\cr
+      &\approx 2\bigg(
+           k(\omega_{\sigma})k'(\omega_{\sigma})
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           -\big(k'(\omega_{\sigma})g(\omega_{\sigma})
+              +k(\omega_{\sigma})g'(\omega_{\sigma})\big)\nabla\times
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+         \bigg)\cr
+      &=2\bigg(
+           \underbrace{
+           k(\omega_{\sigma})k'(\omega_{\sigma})
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           }_{\vbox{\hbox{``Classic'' group velocity}
+\vskip-4pt\hbox{\qquad$v_g(\omega)\sim 1/k'(\omega)$}
+}}
+           -\underbrace{
+             {{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}
+           \Big|_{\omega_{\sigma}} {{\partial}\over{\partial t}}
+           \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+             }_{\vbox{\hbox{Chiral modification to}\vskip-4pt\hbox{the group velocity}}}
+         \bigg),
+  }
+  \eqdef{eq:poldensp20}
+$$
+where we in the approximate step dropped the ``$\nabla\times\nabla\times$''
+term, and where we adopted the following short-hand notations, starting with
+the dipolar contribution $k(\omega)$ to the magnitude of the wave vector,
+$$
+  k(\omega_{\sigma})\equiv{{\omega_{\sigma} n(\omega_{\sigma})}\over{c}},\qquad
+  k'(\omega_{\sigma})\equiv{{dk(\omega)}\over{d\omega}}\Big|_{\omega_{\sigma}},\qquad
+  k''(\omega_{\sigma})\equiv{{d^2k(\omega)}\over{d\omega^2}}\Big|_{\omega_{\sigma}},
+  \eqdef{eq:dipolwavevec10}
+$$
+and for the gyration coefficient $g(\omega)$ and its dispersive components,
+$$
+  g(\omega_{\sigma})\equiv{{\omega_{\sigma} g_{xyz}(\omega_{\sigma})}\over{c}}
+    ={{\omega_{\sigma}\gamma_{xyz}(-\omega_{\sigma};\omega_{\sigma})}
+       \over{cn(\omega_{\sigma})}},\quad
+  g'(\omega_{\sigma})\equiv{{dg(\omega)}\over{d\omega}}\Big|_{\omega_{\sigma}},\quad
+  g''(\omega_{\sigma})\equiv{{d^2g(\omega)}\over{d\omega^2}}\Big|_{\omega_{\sigma}}.
+  \eqdef{eq:gyrcoeff10}
+$$
+To summarize the product $k(\omega)g(\omega)$ appearing as a derivative in the
+final line in the derivation of the dispersive terms, this is given as
+$$
+  k(\omega)g(\omega)={{\omega^2}\over{c^2}}\gamma_{xyz}(-\omega;\omega),
+$$
+that is to say a purely chiral component without any inclusion of electric
+dipolar interactions.
+
+Judging from the shape of the final terms in Eq.~\eqref{eq:poldensp20},
+we may immediately anticipate that in terms of a circularly polarized
+decomposition, the ``$\nabla\times$'' term will make a differential
+contribution to the LCP/RCP components with equal magnitude but with
+opposite sign, just in the way the gyration term in Eq.~\eqref{eq:poldensp10}
+with a similar ``$\nabla\times$'' term will affect the phase velocity.
+
+\subsection{Group velocity dispersion terms in the 32 (trigonal) medium}
+For the second dispersive term with $e_{\mu\alpha}$ as coefficient%
+\numberedfootnote{Yet again under the assumption of wave propagation along
+  the $z$-axis of rotational symmetry in a medium belonging to the 32
+  (trigonal) point-symmetry group.}
+governing the group velocity dispersion, we obtain
+$$
+  \eqalign{
+    {\bf e}_{\mu} e_{\mu\alpha}&(\omega_{\sigma})
+     {{\partial^2 E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+       ={\bf e}_{\mu} k_{\mu\alpha}(\omega_{\sigma})
+          {{d^2 k_{\mu\alpha}(\omega)}\over{d\omega^2}}\Big|_{\omega_{\sigma}}
+          {{\partial^2 E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}\cr
+      &={{\omega}\over{c}}
+            \big(n(\omega_{\sigma})-g_{xyz}(\omega_{\sigma})\nabla\times\big)
+          {{d^2}\over{d\omega^2}}
+          \bigg(
+            {{\omega}\over{c}}\big(n(\omega)-g_{xyz}(\omega)\nabla\times\big)
+          \bigg)\bigg|_{\omega_{\sigma}}
+          {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}\cr
+      &=\big(k(\omega_{\sigma})-g(\omega_{\sigma})\nabla\times\big)
+         \big(k''(\omega_{\sigma})-g''(\omega_{\sigma})\nabla\times\big)
+          {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}\cr
+      &=\big(k(\omega_{\sigma})-g(\omega_{\sigma})\nabla\times\big)
+         \bigg(
+           k''(\omega_{\sigma})
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+           -g''(\omega_{\sigma})\nabla\times
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+         \bigg)\cr
+      &=\bigg(
+           k(\omega_{\sigma})k''(\omega_{\sigma})
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+           -g(\omega_{\sigma})k''(\omega_{\sigma})\nabla\times
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+      \cr&\qquad\qquad
+           -k(\omega_{\sigma})g''(\omega_{\sigma})\nabla\times
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+           -g(\omega_{\sigma})g''(\omega_{\sigma})\nabla\times\nabla\times
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+         \bigg)\cr
+      &\approx \bigg(
+           k(\omega_{\sigma})k''(\omega_{\sigma})
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+           -\big(k''(\omega_{\sigma})g(\omega_{\sigma})
+              +k(\omega_{\sigma})g''(\omega_{\sigma})\big)\nabla\times
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+         \bigg)\cr
+      &=\bigg(
+           \underbrace{
+           k(\omega_{\sigma})k''(\omega_{\sigma})
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+             }_{\vbox{\hbox{``Classic'' group}\vskip-4pt\hbox{velocity dispersion}}}
+          -\underbrace{
+           \bigg(
+             {{d^2\big(k(\omega)g(\omega)\big)}\over{d\omega^2}}
+             -2k'(\omega)g'(\omega)
+           \bigg)
+           \Big|_{\omega_{\sigma}} {{\partial^2}\over{\partial t^2}}
+           \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+             }_{\vbox{\hbox{Chiral modification to the}\vskip-4pt\hbox{group velocity dispersion}}}
+         \bigg),
+  }
+  \eqdef{eq:poldensp30}
+$$
+Again, just as in the case of the previous group velocity terms, we may from
+the shape of the final terms in Eq.~\eqref{eq:poldensp30}, immediately
+anticipate that in terms of a circularly polarized decomposition, the presence
+of the ``$\nabla\times$'' term will make a differential contribution to the
+LCP/RCP components with equal magnitude but with opposite sign.
+
+\section{The linear part of the polarization density}
+To recapitulate, the linear part of the polarization density is in Cartesian
+coordinates expressed in terms of the linear electric dipolar susceptibility
+tensor $\chi_{\mu\alpha}$ of Eq.~\eqref{eq:chi30} and linear quadrupolar
+(non-local) susceptibility tensor $\gamma_{\mu\alpha\beta}$ of
+Eq.~\eqref{eq:gamma30} as
+$$
+  \eqalign{
+    \varepsilon^{-1}_0{\bf P}^{({\rm L})}_{\omega}
+      &={\bf e}_x\chi_{xx}(-\omega;\omega)E^x_{\omega}
+        +{\bf e}_y\chi_{yy}(-\omega;\omega)E^y_{\omega}
+        +{\bf e}_x\gamma_{xyz}(-\omega;\omega)
+          {{\partial E^y_{\omega}}\over{\partial z}}
+        +{\bf e}_y\gamma_{yxz}(-\omega;\omega)
+          {{\partial E^x_{\omega}}\over{\partial z}}\cr
+      &=\chi_{xx}(-\omega;\omega)
+          ({\bf e}_x E^x_{\omega} + {\bf e}_y E^y_{\omega})
+        +\gamma_{xyz}(-\omega;\omega)
+          \Big({\bf e}_x
+            {{\partial E^y_{\omega}}\over{\partial z}}
+              -{\bf e}_y{{\partial E^x_{\omega}}\over{\partial z}}
+          \Big)\cr
+      &={\bf e}_x \Big(
+           \chi_{xx}(-\omega;\omega)E^x_{\omega}
+           +\gamma_{xyz}(-\omega;\omega){{\partial E^y_{\omega}}\over{\partial z}}
+        \Big)
+      +{\bf e}_y \Big(
+           \chi_{xx}(-\omega;\omega)E^y_{\omega}
+           -\gamma_{xyz}(-\omega;\omega){{\partial E^x_{\omega}}\over{\partial z}}
+        \Big).\cr
+  }
+$$
+As we express this in terms of the formulation of the wave equation in the
+presence of dispersion from Eq.~\eqref{eq:waveeq10}, we for the phase velocity,
+group velocity and group velocity dispersion terms have
+$$
+  \eqalign{
+    {\bf e}_{\mu}&
+      \Big(
+        \underbrace{
+          k^2_{\mu\alpha}(\omega_{\sigma})E^{\alpha}_{\omega_{\sigma}}({\bf r},t)
+        }_{\hbox{See Eq.~\eqref{eq:poldensp10}}}
+        +i\underbrace{
+           d_{\mu\alpha}(\omega_{\sigma})
+            {{\partial E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+        }_{\hbox{See Eq.~\eqref{eq:poldensp20}}}
+        -\underbrace{
+            e_{\mu\alpha}(\omega_{\sigma})
+            {{\partial^2 E^{\alpha}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+        }_{\hbox{See Eq.~\eqref{eq:poldensp30}}}
+      \Big)
+    \cr&\hskip40pt\approx
+        \underbrace{
+          {{\omega^2 n^2(\omega)}\over{c^2}}{\bf E}_{\omega_{\sigma}}({\bf r},t)
+            -{{\omega^2}\over{c^2}}\gamma_{xyz}(-\omega;\omega)
+               \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+        }_{\hbox{From Eq.~\eqref{eq:poldensp10}}}
+    \cr&\hskip80pt
+      +i\underbrace{
+        2\bigg(
+           k(\omega_{\sigma})k'(\omega_{\sigma})
+             {{\partial{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t}}
+           -a'(\omega_{\sigma}){{\partial}\over{\partial t}}
+           \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+         \bigg)
+        }_{\hbox{From Eq.~\eqref{eq:poldensp20}}}\cr
+    \cr&\hskip80pt
+      -\underbrace{
+        \bigg(
+           k(\omega_{\sigma})k''(\omega_{\sigma})
+             {{\partial^2{\bf E}_{\omega_{\sigma}}({\bf r},t)}\over{\partial t^2}}
+          -b''(\omega_{\sigma}){{\partial^2}\over{\partial t^2}}
+           \nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+         \bigg)
+       }_{\hbox{From Eq.~\eqref{eq:poldensp30}}},\cr
+  }
+  \eqdef{eq:poldensp40}
+$$
+where we defined the coefficient $a'_{\sigma}(\omega)$, for the chiral
+differential deviation of the group velocity of pulses as
+$$
+  a'_{\sigma}\equiv a'(\omega_{\sigma})\equiv
+    {{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\Big|_{\omega_{\sigma}},
+  \eqdef{eq:poldensp50}
+$$
+and the coefficient  $b''_{\sigma}(\omega)$, for the chiral differential
+broadening of pulses, or equivalently the differential group velocity
+dispersion, as
+$$
+  b''_{\sigma}\equiv b''(\omega_{\sigma})\equiv
+    \bigg(
+      {{d^2\big(k(\omega)g(\omega)\big)}\over{d\omega^2}}-2k'(\omega)g'(\omega)
+    \bigg)\Big|_{\omega_{\sigma}}.
+  \eqdef{eq:poldensp60}
+$$
+The ``prime'' and ``bis'' on the $a'(\omega_{\sigma})$ and $b''(\omega_{\sigma})$
+coefficients are not only cosmetic ornaments to match the corresponding
+$k'(\omega_{\sigma})$ and $k''(\omega_{\sigma})$ coefficients for the first and
+second order partial derivatives in time, but also since these coefficients
+in fact {\it are} first and second order derivatives.
+
+As the terms of Eq.~\eqref{eq:poldensp40} are inserted into the wave
+equation~\eqref{eq:waveeq10} we hence obtain the vector wave equation
+for propagation along the $z$-axis as\numberedfootnote{In this form, one
+  might think that the $a'(\omega_{\sigma})$ and $b''(\omega_{\sigma})$
+  coefficients seem to each lack a ``$k(\omega_{\sigma})$'' factor when
+  comparing to the other terms of first and second partial derivatives
+  in time. However, keep in mind that the $\nabla\times$ operating on
+  the electric field will produce exactly this; hence it is perfectly
+  well that the $a'(\omega_{\sigma})$ and $b''(\omega_{\sigma})$ coefficients,
+  which stem from the chiral nature of the medium, lack this.}
+$$
+  \eqalign{
+    &\nabla\times\nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+      -\Bigg\{
+          k^2_{\sigma}
+          +2ik_{\sigma}k'_{\sigma}{{\partial}\over{\partial t}}
+          -k_{\sigma}k''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg\}{\bf E}_{\omega_{\sigma}}({\bf r},t)
+    \cr&\hskip40pt
+      +\Bigg\{
+        {{\omega^2}\over{c^2}}\gamma_{xyz}(-\omega;\omega)
+          +2ia'_{\sigma}{{\partial}\over{\partial t}}
+          -b''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg\}\nabla\times{\bf E}_{\omega_{\sigma}}({\bf r},t)
+      =\mu_0\omega^2_{\sigma}{\bf P}^{({\rm NL})}_{\omega_{\sigma}}({\bf r},t).\cr
+  }
+  \eqdef{eq:poldensp70}
+$$
+
+\section{Compiling the wave equation for the temporal envelopes}
+By adopting the short-hand notation for the dipolar part of the magnitude of
+the wave vector as
+$$
+  k_{\sigma}=k(\omega_{\sigma})={{\omega_{\sigma} n(\omega_{\sigma})}\over{c}},\quad
+  k'_{\sigma}=k'(\omega_{\sigma})={{d}\over{d\omega}}
+           \bigg({{\omega n(\omega)}\over{c}}\bigg)\Big|_{\omega_{\sigma}},\quad
+  k''_{\sigma}=k''(\omega_{\sigma})={{d^2}\over{d\omega^2}}
+           \bigg({{\omega n(\omega)}\over{c}}\bigg)\Big|_{\omega_{\sigma}},
+$$
+the wave equation~\eqref{eq:waveeq20} in the vicinity of each centre frequency
+$\omega_{\sigma}$ of the parametric process, for the envelopes
+$E^{\mu}_{\omega_{\sigma}}(z,t)$ and of the inifinite plane waves, expressed
+component-wise from Eq.~\eqref{eq:poldensp70} for Cartesian coordinates
+$\mu=x,y$, becomes
+\par\boxit{
+$$
+  \eqalignno{
+    &{{\partial^2 E^x_{\omega_{\sigma}}(z,t)}\over{\partial z^2}}
+      +\Bigg(
+          k^2_{\sigma}
+          +2ik_{\sigma}k'_{\sigma}{{\partial}\over{\partial t}}
+          -k_{\sigma}k''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg) E^x_{\omega_{\sigma}}(z,t)
+    \cr&\hskip90pt
+      +\Bigg(
+          {{\omega^2\gamma_{\sigma}}\over{c^2}}
+          +2ia'_{\sigma}{{\partial}\over{\partial t}}
+          -b''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg) {{\partial E^y_{\omega_{\sigma}}(z,t)}\over{\partial z}}
+      =-\mu_0\omega^2_{\sigma} P^{({\rm NL})x}_{\omega_{\sigma}}(z,t),\qquad
+    \eqdefn{eq:waveeq40}&\eqsubdef{eq:waveeq40a}\cr
+    &{{\partial^2 E^y_{\omega_{\sigma}}(z,t)}\over{\partial z^2}}
+      +\Bigg(
+          k^2_{\sigma}
+          +2ik_{\sigma}k'_{\sigma}{{\partial}\over{\partial t}}
+          -k_{\sigma}k''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg) E^y_{\omega_{\sigma}}(z,t)
+    \cr&\hskip90pt
+      -\Bigg(
+          {{\omega^2\gamma_{\sigma}}\over{c^2}}
+          +2ia'_{\sigma}{{\partial}\over{\partial t}}
+          -b''_{\sigma}{{\partial^2}\over{\partial t^2}}
+       \Bigg) {{\partial E^x_{\omega_{\sigma}}(z,t)}\over{\partial z}}
+      =-\mu_0\omega^2_{\sigma} P^{({\rm NL})y}_{\omega_{\sigma}}(z,t),\qquad
+    &\eqsubdef{eq:waveeq40b}\cr
+  }
+$$
+}\noindent
+where, just to recapitulate the notation, the coefficients $a'_{\sigma}\equiv
+a'(\omega_{\sigma})$ and $b''_{\sigma}\equiv b''(\omega_{\sigma})$ are given by
+Eqs.~\eqref{eq:poldensp50} and~\eqref{eq:poldensp60}, respectively, and where
+$$
+  n_{\sigma}\equiv n(\omega_{\sigma})
+    =(1+\chi_{xx}(-\omega_{\sigma};\omega_{\sigma}))^{1/2}
+$$
+is the dipolar linear part of the regular refractive index, and
+$$
+  \gamma_{\sigma}\equiv\gamma_{xyz}(-\omega_{\sigma};\omega_{\sigma})
+$$
+the corresponding chiral correction to the refractive index from the
+non-local (chiral) part of the light-matter interaction.
+
+\section{The nonlinear polarization density expressed in a Cartesian
+         coordinate system}
+In the one-dimensional wave equation $\eqref{eq:waveeq40}$ for the respective
+centre frequencies $\omega_{\sigma}=\omega_{\rm i}$, $\omega_{\rm s}$,
+$\omega_{\rm p}$, we have yet to explicitly state the nature of the nonlinear
+wave interactions which act as the mixer between the involved frequencies.
+From the nonzero applicable sets of susceptibility elements of
+Eqs.~\eqref{eq:chi30} and~\eqref{eq:gamma30}, we obtain the nonlinear
+polarization density expressed in cartesian coordinates as follows.
+
+\subsection{Nonlinear polarization density for the idler}
+Given the nonzero tensor elements as listed in Eqs.~\eqref{eq:chi30}
+and~\eqref{eq:gamma30}, we for the idler, at angular frequency
+$\omega_1=\omega_3-\omega_2$, have the nonlinear polarization density
+expressed in the Cartesian coordinate system\numberedfootnote{And, of course,
+  with the susceptibilities expressed with their frequency arguments following
+  the convention of P.~N.~Butcher and D.~Cotter's {The Elements of Nonlinear
+  Optics} (Cambridge, 1990).}
+as
+$$
+  \eqalign{
+    \varepsilon^{-1}_0
+    {\bf P}^{({\rm NL})}_{\omega_1}
+     =&{\bf e}_x\big[
+         \chi_{xxx}(-\omega_1;\omega_3,-\omega_2)E^x_{\omega_3}E^{x*}_{\omega_2}
+         +\chi_{xyy}(-\omega_1;\omega_3,-\omega_2)E^y_{\omega_3}E^{y*}_{\omega_2}
+       \big]\cr
+      &+{\bf e}_y\big[
+         \chi_{yxy}(-\omega_1;\omega_3,-\omega_2)E^x_{\omega_3}E^{y*}_{\omega_2}
+         +\chi_{yyx}(-\omega_1;\omega_3,-\omega_2)E^y_{\omega_3}E^{x*}_{\omega_2}
+       \big]\cr
+      &+{\bf e}_x\big[
+         \gamma_{xxyz}(-\omega_1;\omega_3,-\omega_2)
+           {{\partial}\over{\partial z}}\big(E^x_{\omega_3}E^{y*}_{\omega_2}\big)
+         +\gamma_{xyxz}(-\omega_1;\omega_3,-\omega_2)
+           {{\partial}\over{\partial z}}\big(E^y_{\omega_3}E^{x*}_{\omega_2}\big)
+       \big]\cr
+      &+{\bf e}_y\big[
+         \gamma_{yyyz}(-\omega_1;\omega_3,-\omega_2)
+           {{\partial}\over{\partial z}}\big(E^y_{\omega_3}E^{y*}_{\omega_2}\big)
+         +\gamma_{yxxz}(-\omega_1;\omega_3,-\omega_2)
+           {{\partial}\over{\partial z}}\big(E^x_{\omega_3}E^{x*}_{\omega_2}\big)
+       \big].\cr
+  }
+$$
+where we for the sake of simplicity in notation omitted the expolicit arguments
+to the temporal field envelopes $E^{\mu}_{\omega_k}\equiv E^{\mu}_{\omega_k}(z,t)$.
+By using the relations from Eqs.~\eqref{eq:chi30} and~\eqref{eq:gamma30}, which
+are results of spatial symmetry condiderations and always hold, regardless of
+frequency arguments of frequency regime, we may reduce this to the single
+unique elements $\chi_{xxx}$ and $\gamma_{xxyz}$ to yield
+$$
+  \eqalign{
+    \varepsilon^{-1}_0
+    {\bf P}^{({\rm NL})}_{\omega_1}
+     =&\chi_{xxx}(-\omega_1;\omega_3,-\omega_2)
+       \big[
+         {\bf e}_x
+           \big(E^x_{\omega_3}E^{x*}_{\omega_2}-E^y_{\omega_3}E^{y*}_{\omega_2}\big)
+         -{\bf e}_y
+           \big(E^x_{\omega_3}E^{y*}_{\omega_2}+E^y_{\omega_3}E^{x*}_{\omega_2}\big)
+       \big]\cr
+      &+\gamma_{xxyz}(-\omega_1;\omega_3,-\omega_2){{\partial}\over{\partial z}}
+       \Big[
+         {\bf e}_x
+         \big(E^x_{\omega_3}E^{y*}_{\omega_2}+E^y_{\omega_3}E^{x*}_{\omega_2}\big)
+        -{\bf e}_y
+         \big(E^y_{\omega_3}E^{y*}_{\omega_2}-E^x_{\omega_3}E^{x*}_{\omega_2}\big)
+       \Big].\cr
+  }
+  \eqdef{eq:nlpoldensidler10}
+$$
+We should here emphasize the complex conjugation of the fields associated with
+the signal at $\omega_2$, connected to the negative frequency argument of
+$\omega_2$ in the nonlinear susceptibility tensors
+$\chi_{\mu\alpha\beta}(-\omega_1;\omega_3,-\omega_2)$ and
+$\gamma_{\mu\alpha\beta\gamma}(-\omega_1;\omega_3,-\omega_2)$.
+
+\subsection{Nonlinear polarization density for the signal}
+In the same way as for the idler, we for the signal, at angular frequency
+$\omega_2=\omega_3-\omega_1$, obtain the nonlinear polarization density
+expressed in the Cartesian coordinate system as
+$$
+  \eqalign{
+    \varepsilon^{-1}_0
+    {\bf P}^{({\rm NL})}_{\omega_2}
+     =&\chi_{xxx}(-\omega_2;\omega_3,-\omega_1)
+       \big[
+         {\bf e}_x
+           \big(E^x_{\omega_3}E^{x*}_{\omega_1}-E^y_{\omega_3}E^{y*}_{\omega_1}\big)
+         -{\bf e}_y
+           \big(E^x_{\omega_3}E^{y*}_{\omega_1}+E^y_{\omega_3}E^{x*}_{\omega_1}\big)
+       \big]\cr
+      &+\gamma_{xxyz}(-\omega_2;\omega_3,-\omega_1){{\partial}\over{\partial z}}
+       \Big[
+         {\bf e}_x
+         \big(E^x_{\omega_3}E^{y*}_{\omega_1}+E^y_{\omega_3}E^{x*}_{\omega_1}\big)
+        -{\bf e}_y
+         \big(E^y_{\omega_3}E^{y*}_{\omega_1}-E^x_{\omega_3}E^{x*}_{\omega_1}\big)
+       \Big].\cr
+  }
+  \eqdef{eq:nlpoldenssignal10}
+$$
+where the only difference compared to Eq.~\eqref{eq:nlpoldensidler10} is the
+swap of idler and signal angular frequencies
+$\omega_1\rightleftharpoons\omega_2$.
+Again, we emphasize the complex conjugation of the fields associated with
+the idler at $\omega_1$, connected to the negative frequency argument of
+$\omega_1$ in the nonlinear susceptibility tensors
+$\chi_{\mu\alpha\beta}(-\omega_2;\omega_3,-\omega_1)$ and
+$\gamma_{\mu\alpha\beta\gamma}(-\omega_2;\omega_3,-\omega_1)$.
+
+\subsection{Nonlinear polarization density for the pump}
+In the same way as for the idler and signal, we for the signal, at angular
+frequency $\omega_3=\omega_1+\omega_2$, obtain the nonlinear polarization
+density expressed in the Cartesian coordinate system as
+$$
+  \eqalign{
+    \varepsilon^{-1}_0
+    {\bf P}^{({\rm NL})}_{\omega_3}
+     =&\chi_{xxx}(-\omega_3;\omega_1,\omega_2)
+       \big[
+         {\bf e}_x
+           \big(E^x_{\omega_1}E^x_{\omega_2}-E^y_{\omega_1}E^y_{\omega_2}\big)
+         -{\bf e}_y
+           \big(E^x_{\omega_1}E^y_{\omega_2}+E^y_{\omega_1}E^x_{\omega_2}\big)
+       \big]\cr
+      &+\gamma_{xxyz}(-\omega_3;\omega_1,\omega_2){{\partial}\over{\partial z}}
+       \Big[
+         {\bf e}_x
+         \big(E^x_{\omega_1}E^y_{\omega_2}+E^y_{\omega_1}E^x_{\omega_2}\big)
+        -{\bf e}_y
+         \big(E^y_{\omega_1}E^y_{\omega_2}-E^x_{\omega_1}E^x_{\omega_2}\big)
+       \Big].\cr
+  }
+  \eqdef{eq:nlpoldenspump10}
+$$
+In contrary to the nonlinear polarization densities for the idler and signal
+waves, there is in the corresponding expression for the pump at
+$\omega_3=\omega_1+\omega_2$ no complex conjugation of the mixed fields,
+connected to the all-positive frequency arguments of $\omega_1$ and
+$\omega_2$ in the nonlinear susceptibility tensors
+$\chi_{\mu\alpha\beta}(-\omega_3;\omega_1,\omega_2)$ and
+$\gamma_{\mu\alpha\beta\gamma}(-\omega_3;\omega_1,\omega_2)$.
+
+\section{Inserting the nonlinear polarization density into the wave equation}
+At this stage, we have all the nonlinear polarization densities for the idler,
+signal and pump derived, for the electric dipolar part (tensor
+$\chi_{\mu\alpha\beta}$) as well as the non-local, quadrupolar part (tensor
+$\gamma_{\mu\alpha\beta\gamma}$).
+These nonlinear polarization densities will act as sources in the otherwise
+homogeneous partial differential equations for the temporal field
+envelopes,\numberedfootnote{By {\it temporal field envelope}, we here mean
+  a field where the rapid harmonic oscillation in time has been removed
+  from the equation, by the convention of notation for complex-valued
+  fields as introduced in Eqs.~\eqref{eq:fields10},
+  $$
+    \eqalign{
+      {\bf E}({\bf r},t)&=\sum_{\omega_{\sigma}}{\rm Re}[
+             {\bf E}_{\omega_{\sigma}}({\bf r},t)\exp(-i\omega_{\sigma}t)],\cr
+      {\bf P}({\bf r},t)&=\sum_{\omega_{\sigma}}{\rm Re}[
+             ({\bf P}^{({\rm L})}_{\omega_{\sigma}}({\bf r},t)
+               +{\bf P}^{({\rm NL})}_{\omega_{\sigma}}({\bf r},t))
+             \exp(-i\omega_{\sigma}t)].\cr
+    }
+  $$
+  }
+and by inserting Eqs.~\eqref{eq:nlpoldensidler10}--\eqref{eq:nlpoldenspump10}
+consecutively into Eq.~\eqref{eq:waveeq40} for the temporal field envelopes,
+we in Cartesian coordinates obtain the respective wave equation for the total
+fields of the idler, signal and pump.
+
+It should here be emphasized that we so far have not separated these total
+fields into any forward and backward traveling components; this will come
+as soon as we make an ansatz of the temporal envlopes having typical
+$\exp(i\omega n_k z/c)$ or $\exp(-i\omega n_k z/c)$ dependencies, for the
+forward and backward traveling components, respectively.
+
+\subsection{Wave equation for the temporal envelope of the total field of
+            the idler}
+To start with, by inserting Eqs.~\eqref{eq:nlpoldensidler10} into
+Eq.~\eqref{eq:waveeq40}, we for the temporal field envelope of the idler
+in Cartesian coordinates obtain
+$$
+  \eqalignno{
+    &{{\partial^2 E^x_{\omega_1}}\over{\partial z^2}}
+      +\bigg(
+          k^2_1
+          +2ik_1k'_1{{\partial}\over{\partial t}}
+          -k_1k''_1{{\partial^2}\over{\partial t^2}}
+       \bigg) E^x_{\omega_1}
+      +\bigg(
+          {{\omega^2_1\gamma_1}\over{c^2}}
+          +2ia'_1{{\partial}\over{\partial t}}
+          -b''_1{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^y_{\omega_1}}\over{\partial z}}
+    \cr&\hskip80pt
+    = -\Big({{\omega_1}\over{c}}\Big)^2
+      \Big[
+       \chi_{xxx}(-\omega_1;\omega_3,-\omega_2)
+           \big(E^x_{\omega_3}E^{x*}_{\omega_2}-E^y_{\omega_3}E^{y*}_{\omega_2}\big)
+      \cr&\hskip150pt
+       +\gamma_{xxyz}(-\omega_1;\omega_3,-\omega_2){{\partial}\over{\partial z}}
+         \big(E^x_{\omega_3}E^{y*}_{\omega_2}+E^y_{\omega_3}E^{x*}_{\omega_2}\big)
+      \Big],
+    \eqdefn{eq:waveeq50}&\eqsubdef{eq:waveeq50a}\cr
+    &{{\partial^2 E^y_{\omega_1}}\over{\partial z^2}}
+      +\bigg(
+          k^2_1
+          +2ik_1k'_1{{\partial}\over{\partial t}}
+          -k_1k''_1{{\partial^2}\over{\partial t^2}}
+       \bigg) E^y_{\omega_1}
+      -\bigg(
+          {{\omega^2_1\gamma_1}\over{c^2}}
+          +2ia'_1{{\partial}\over{\partial t}}
+          -b''_1{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^x_{\omega_1}}\over{\partial z}}\cr
+    \cr&\hskip80pt
+      = -\Big({{\omega_1}\over{c}}\Big)^2
+      \Big[
+       -\chi_{xxx}(-\omega_1;\omega_3,-\omega_2)
+           \big(E^x_{\omega_3}E^{y*}_{\omega_2}+E^y_{\omega_3}E^{x*}_{\omega_2}\big)
+      \cr&\hskip150pt
+       -\gamma_{xxyz}(-\omega_1;\omega_3,-\omega_2){{\partial}\over{\partial z}}
+         \big(E^y_{\omega_3}E^{y*}_{\omega_2}-E^x_{\omega_3}E^{x*}_{\omega_2}\big)
+      \Big],
+    &\eqsubdef{eq:waveeq50b}\cr
+  }
+$$
+where we used $\varepsilon_0\mu_0\equiv c^{-2}$, and where we for the sake of
+simplicity dropped the explicit spatial and temporal arguments of the field
+envelopes $E^{\mu}_{\omega_k}\equiv E^{\mu}_{\omega_k}(z,t)$, introduced the
+short-hand notation
+$$
+  n_k \equiv n(\omega_k)\equiv(1+\chi_{xx}(-\omega_k;\omega_k))^{1/2},\qquad
+  \gamma_k \equiv \gamma(\omega_k) \equiv \gamma_{xyz}(-\omega_k;\omega_k),
+$$
+and, for the coefficients of dispersion,
+$$
+  k'_k \equiv k'(\omega_k)
+       \equiv {{d}\over{d\omega}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_k},\qquad
+  k''_k \equiv k''(\omega_k)
+        \equiv {{d^2}\over{d\omega^2}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_k},
+$$
+while the coefficients $a'_{\sigma}\equiv a'(\omega_{\sigma})$ and
+$b''_{\sigma}\equiv b''(\omega_{\sigma})$ as previously are given by
+Eqs.~\eqref{eq:poldensp50} and~\eqref{eq:poldensp60}, respectively.
+
+\subsection{Wave equation for the temporal envelope of the total field of
+            the signal}
+Using the same notation as introduced for the idler in the previous section,
+we by inserting Eqs.~\eqref{eq:nlpoldenssignal10} into Eq.~\eqref{eq:waveeq40},
+for the temporal field envelope of the signal, obtain
+$$
+  \eqalignno{
+    &{{\partial^2 E^x_{\omega_2}}\over{\partial z^2}}
+      +\bigg(
+          k^2_2
+          +2ik_2k'_2{{\partial}\over{\partial t}}
+          -k_2k''_2{{\partial^2}\over{\partial t^2}}
+       \bigg) E^x_{\omega_2}
+      +\bigg(
+          {{\omega^2_2\gamma_2}\over{c^2}}
+          +2ia'_2{{\partial}\over{\partial t}}
+          -b''_2{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^y_{\omega_2}}\over{\partial z}}
+    \cr&\hskip80pt
+      = -\Big({{\omega_2}\over{c}}\Big)^2
+      \Big[
+       \chi_{xxx}(-\omega_2;\omega_3,-\omega_1)
+           \big(E^x_{\omega_3}E^{x*}_{\omega_1}-E^y_{\omega_3}E^{y*}_{\omega_1}\big)
+      \cr&\hskip150pt
+       +\gamma_{xxyz}(-\omega_2;\omega_3,-\omega_1){{\partial}\over{\partial z}}
+         \big(E^x_{\omega_3}E^{y*}_{\omega_1}+E^y_{\omega_3}E^{x*}_{\omega_1}\big)
+      \Big],
+    \eqdefn{eq:waveeq60}&\eqsubdef{eq:waveeq60a}\cr
+    &{{\partial^2 E^y_{\omega_2}}\over{\partial z^2}}
+      +\bigg(
+          k^2_2
+          +2ik_2k'_2{{\partial}\over{\partial t}}
+          -k_2k''_2{{\partial^2}\over{\partial t^2}}
+       \bigg) E^y_{\omega_2}
+      -\bigg(
+          {{\omega^2_2\gamma_2}\over{c^2}}
+          +2ia'_2{{\partial}\over{\partial t}}
+          -b''_2{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^x_{\omega_2}}\over{\partial z}}\cr
+    \cr&\hskip80pt
+      = -\Big({{\omega_2}\over{c}}\Big)^2
+      \Big[
+       -\chi_{xxx}(-\omega_2;\omega_3,-\omega_1)
+           \big(E^x_{\omega_3}E^{y*}_{\omega_1}+E^y_{\omega_3}E^{x*}_{\omega_1}\big)
+      \cr&\hskip150pt
+       -\gamma_{xxyz}(-\omega_2;\omega_3,-\omega_1){{\partial}\over{\partial z}}
+         \big(E^y_{\omega_3}E^{y*}_{\omega_1}-E^x_{\omega_3}E^{x*}_{\omega_1}\big)
+      \Big].
+    &\eqsubdef{eq:waveeq60b}\cr
+  }
+$$
+
+\subsection{Wave equation for the temporal envelope of the total field of
+            the pump}
+Finally, by inserting Eqs.~\eqref{eq:nlpoldenspump10} into
+Eq.~\eqref{eq:waveeq40}, for the temporal field envelope of the pump, we obtain
+$$
+  \eqalignno{
+    &{{\partial^2 E^x_{\omega_3}}\over{\partial z^2}}
+      +\bigg(
+          k^2_3
+          +2ik_3k'_3{{\partial}\over{\partial t}}
+          -k_3k''_3{{\partial^2}\over{\partial t^2}}
+       \bigg) E^x_{\omega_3}
+      +\bigg(
+          {{\omega^2_3\gamma_3}\over{c^2}}
+          +2ia'_3{{\partial}\over{\partial t}}
+          -b''_3{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^y_{\omega_3}}\over{\partial z}}
+    \cr&\hskip80pt
+      = -\Big({{\omega_3}\over{c}}\Big)^2
+      \Big[
+       \chi_{xxx}(-\omega_3;\omega_1,\omega_2)
+           \big(E^x_{\omega_1}E^x_{\omega_2}-E^y_{\omega_1}E^y_{\omega_2}\big)
+      \cr&\hskip150pt
+       +\gamma_{xxyz}(-\omega_3;\omega_1,\omega_2){{\partial}\over{\partial z}}
+         \big(E^x_{\omega_1}E^y_{\omega_2}+E^y_{\omega_1}E^x_{\omega_2}\big)
+      \Big],
+    \eqdefn{eq:waveeq70}&\eqsubdef{eq:waveeq70a}\cr
+    &{{\partial^2 E^y_{\omega_3}}\over{\partial z^2}}
+      +\bigg(
+          k^2_3
+          +2ik_3k'_3{{\partial}\over{\partial t}}
+          -k_3k''_3{{\partial^2}\over{\partial t^2}}
+       \bigg) E^y_{\omega_3}
+      -\bigg(
+          {{\omega^2_3\gamma_3}\over{c^2}}
+          +2ia'_3{{\partial}\over{\partial t}}
+          -b''_3{{\partial^2}\over{\partial t^2}}
+       \bigg) {{\partial E^x_{\omega_3}}\over{\partial z}}\cr
+    \cr&\hskip80pt
+      = -\Big({{\omega_3}\over{c}}\Big)^2
+      \Big[
+       -\chi_{xxx}(-\omega_3;\omega_1,\omega_2)
+           \big(E^x_{\omega_1}E^y_{\omega_2}+E^y_{\omega_1}E^x_{\omega_2}\big)
+      \cr&\hskip150pt
+       -\gamma_{xxyz}(-\omega_3;\omega_1,\omega_2){{\partial}\over{\partial z}}
+         \big(E^y_{\omega_1}E^y_{\omega_2}-E^x_{\omega_1}E^x_{\omega_2}\big)
+      \Big].
+    &\eqsubdef{eq:waveeq70b}\cr
+  }
+$$
+Again, notice the adsence of complex conjugation of mixed fields in the
+right-hand side of these equations for the temmporal field envelope for
+the pump.
+
+\section{Expressing the wave equations in circularly polarized basis vectors}
+We {\it\'a priori} know that the gyrotropic nature introduced by the nonlocal
+interaction will manifest itself as a circular birefringence. Therefore, we
+may now carry through the straightforward but nevertheless somewhat cumbersome
+exercise of expressing the wave
+equations~\eqref{eq:waveeq50}--\eqref{eq:waveeq70} in a circularly polarized
+base.
+
+\subsection{The circularly polarized basis vectors}
+By using the convention from Eq.~\eqref{eq:fields10},
+$$
+  {\bf E}({\bf r},t)=\sum_{\omega_{\sigma}}{\rm Re}[
+           {\bf E}_{\omega_{\sigma}}({\bf r},t)\exp(-i\omega_{\sigma}t)],
+$$
+for the notation of complex-valued temporal field envelopes, the appropriate
+sign convention for the circularly polarized base vectors ${\bf e}_+$ (left
+circular polarization, LCP) and ${\bf e}_-$ (right circular polarization, RCP)
+yields
+$$
+  {\bf e}_+={{1}\over{\sqrt{2}}}({\bf e}_x+i{\bf e}_y),\qquad
+  {\bf e}_-={{1}\over{\sqrt{2}}}({\bf e}_x-i{\bf e}_y).
+  \eqdef{eq:circbasis10}
+$$
+The orthogonality properties of these basis vectors yield
+$$
+  {\bf e}^*_{\pm}\cdot{\bf e}_{\pm}=1,\qquad
+  {\bf e}^*_{\pm}\cdot{\bf e}_{\mp}=0,\qquad
+  {\bf e}_{\pm}\times{\bf e}_{\mp}=\mp i{\bf e}_z,\qquad
+  {\bf e}_{\pm}\times{\bf e}_z = \pm i{\bf e}_{\pm}.
+  \eqdef{eq:circbasis20}
+$$
+We may equally well inversely express the Cartesian basis vectors ${\bf e}_x$
+and ${\bf e}_y$ in terms of the circularly polarized basis vectors as
+$$
+  {\bf e}_x={{1}\over{\sqrt{2}}}({\bf e}_++{\bf e}_-),\qquad
+  {\bf e}_y={{1}\over{i\sqrt{2}}}({\bf e}_+-{\bf e}_-).
+  \eqdef{eq:circbasis30}
+$$
+
+\subsection{The circularly polarized field components}
+The previously defined circularly polarized basis vectors provide a very
+convenielt tool when it comes to the formulation of the circularly polarized
+field representation, since we may just project the circularly polarized field
+components $E^+_{\omega}$ (LCP) and $E^-_{\omega}$ (RCP) out of the Cartesian
+representation by
+$$
+  \eqalignno{
+    E^+_{\omega}
+      &={\bf e}^*_+\cdot(E^x_{\omega}{\bf e}_x+E^y_{\omega}{\bf e}_y)
+       ={{1}\over{\sqrt{2}}}({\bf e}_x-i{\bf e}_y)
+          \cdot(E^x_{\omega}{\bf e}_x+E^y_{\omega}{\bf e}_y)
+       ={{1}\over{\sqrt{2}}}(E^x_{\omega}-iE^y_{\omega}),
+       \eqdefn{eq:circbasis40}&\eqsubdef{eq:circbasis40a}\cr
+    E^-_{\omega}
+      &={\bf e}^*_-\cdot(E^x_{\omega}{\bf e}_x+E^y_{\omega}{\bf e}_y)
+       ={{1}\over{\sqrt{2}}}({\bf e}_x+i{\bf e}_y)
+          \cdot(E^x_{\omega}{\bf e}_x+E^y_{\omega}{\bf e}_y)
+       ={{1}\over{\sqrt{2}}}(E^x_{\omega}+iE^y_{\omega}).
+       &\eqsubdef{eq:circbasis40b}\cr
+  }
+$$
+Of course, the projection of a circularly polarized component from a
+field which already is formulated in the circularly polarized basis is
+trivial, using the orthogonality conditions
+${\bf e}^*_{\pm}\cdot{\bf e}_{\pm}=1$ and
+${\bf e}^*_{\pm}\cdot{\bf e}_{\mp}=0$,
+$$
+  E^{\pm}_{\omega}={\bf e}^*_{\pm}
+    \cdot(E^+_{\omega}{\bf e}_++E^-_{\omega}{\bf e}_-).
+$$
+Again, we may just as well inverse these relations and express the fields in
+the Cartesian coordinate system in terms of these circularly polarized
+components, as
+$$
+  E^x_{\omega}={{1}\over{\sqrt{2}}}(E^+_{\omega}+E^-_{\omega}),\qquad
+  E^y_{\omega}={{i}\over{\sqrt{2}}}(E^+_{\omega}-E^-_{\omega}).
+  \eqdef{eq:circbasis50}
+$$
+Since we in the wave equations~\eqref{eq:waveeq50}--\eqref{eq:waveeq70}
+have all fields expressed in a Cartesian system, we will in the
+formulation of the equivalent systems in a circularly polarized basis
+primarily use Eqs.~\eqref{eq:circbasis30} and~\eqref{eq:circbasis50}.
+
+\subsection{The circularly polarized representation of the wave equation
+            for the idler}
+By expressing all fields in the wave equation~\eqref{eq:waveeq50} for the
+temporal envelope of the idler at angular frequency $\omega_1=\omega_3-\omega_2$
+in the circularly polarized basis from Eq.~\eqref{eq:circbasis30}, in terms of
+the LCP and RCP field components as provided by Eq.~\eqref{eq:circbasis50}, we
+after some cumbersome but straightforward algebra obtain\numberedfootnote{From
+  a practical algebraic point, we in the derivation of this expression
+  simply express all Cartesian field components in terms of their circularly
+  polarized components via Eqs.~\eqref{eq:circbasis50} and solve for
+  $E^+_{\omega_1}$ and $E^-_{\omega_1}$.}
+\par\boxit{
+$$
+  \eqalign{
+   &\Big[
+     {{\partial^2}\over{\partial z^2}}
+       +k^2_1
+       +2ik_1 k'_1 {{\partial}\over{\partial t}}
+       -k_1 k''_1 {{\partial^2}\over{\partial t^2}}
+       \pm i\Big(
+          {{\omega^2_1\gamma_1}\over{c^2}}
+          +2ia'_1 {{\partial}\over{\partial t}}
+          -b''_1 {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial}\over{\partial z}}
+    \Big] E^{\pm}_{\omega_1}
+    \cr&\hskip220pt
+      = -\Big({{\omega_1}\over{c}}\Big)^2
+      \Big(p_1 \pm iq_1 {{\partial}\over{\partial z}}\Big)
+      \big(E^{\mp}_{\omega_3}E^{\pm*}_{\omega_2}\big).\cr
+  }
+  \eqdef{eq:waveeq80}
+$$
+}\noindent
+with, just to recapitulate, the short-hand notation for the coefficients as
+$$
+  \eqalign{
+  n_1&=n(\omega_1)=[1+\chi_{xx}(-\omega_1;\omega_1)]^{1/2},\qquad
+    \gamma_1=\gamma_{xyz}(-\omega_1;\omega_1),\cr
+  p_1 &= 2^{1/2}\chi_{xxx}(-\omega_1;\omega_3,-\omega_2),\qquad
+  q_1 = 2^{1/2}\gamma_{xxyz}(-\omega_1;\omega_3,-\omega_2),\cr
+  k_1 &\equiv k(\omega_1)
+       \equiv {{\omega_1 n(\omega_1)}\over{c}},\quad
+  k'_1 \equiv k'(\omega_1)
+       \equiv {{d}\over{d\omega}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_1},\quad
+  k''_1 \equiv k''(\omega_1)
+        \equiv {{d^2}\over{d\omega^2}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_1}.\cr
+  a'_1 &\equiv a'(\omega_1)
+        \equiv {{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg|_{\omega_1},
+        \quad
+  b''_1 \equiv b''(\omega_1)
+        \equiv
+    \bigg(
+      {{d^2\big(k(\omega)g(\omega)\big)}\over{d\omega^2}}-2k'(\omega)g'(\omega)
+    \bigg)\bigg|_{\omega_1},\cr
+  g(\omega)&\equiv{{\omega g_{xyz}(\omega_{\sigma})}\over{c}}
+    ={{\omega\gamma_{xyz}(-\omega;\omega)}
+       \over{cn(\omega)}},\quad
+  g'(\omega)\equiv{{dg(\omega)}\over{d\omega}},\cr
+  }
+$$
+where the coefficients $g(\omega_1)$, $a'_1\equiv a'(\omega_1)$ and
+$b''_1\equiv b''(\omega_1)$ as previously are originally defined by
+Eqs.~\eqref{eq:gyrcoeff10}, \eqref{eq:poldensp50} and~\eqref{eq:poldensp60},
+respectively.
+
+\subsection{The circularly polarized representation of the wave equation
+            for the signal}
+In similar to the previous expression for the idler, we by expressing all fields
+in the wave equation~\eqref{eq:waveeq60} for the temporal envelope of the signal
+at angular frequency $\omega_2=\omega_3-\omega_1$ in the circularly polarized
+basis from Eq.~\eqref{eq:circbasis30} obtain
+\par\boxit{
+$$
+  \eqalign{
+   &\Big[
+     {{\partial^2}\over{\partial z^2}}
+       +k^2_2
+       +2ik_2 k'_2 {{\partial}\over{\partial t}}
+       -k_2 k''_2 {{\partial^2}\over{\partial t^2}}
+       \pm i\Big(
+          {{\omega^2_2\gamma_2}\over{c^2}}
+          +2ia'_2 {{\partial}\over{\partial t}}
+          -b''_2 {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial}\over{\partial z}}
+    \Big] E^{\pm}_{\omega_2}
+    \cr&\hskip220pt
+      = -\Big({{\omega_2}\over{c}}\Big)^2
+      \Big(p_2 \pm iq_2 {{\partial}\over{\partial z}}\Big)
+      \big(E^{\mp}_{\omega_3}E^{\pm*}_{\omega_1}\big).\cr
+  }
+  \eqdef{eq:waveeq90}
+$$
+}\noindent
+with, just to recapitulate, the short-hand notation for the coefficients as
+$$
+  \eqalign{
+  n_2&=n(\omega_2)=[1+\chi_{xx}(-\omega_2;\omega_2)]^{1/2},\qquad
+    \gamma_2=\gamma_{xyz}(-\omega_2;\omega_2),\cr
+  p_2 &= 2^{1/2}\chi_{xxx}(-\omega_2;\omega_3,-\omega_1),\qquad
+  q_2 = 2^{1/2}\gamma_{xxyz}(-\omega_2;\omega_3,-\omega_1),\cr
+  k_2 &\equiv k(\omega_2)
+       \equiv {{\omega_2 n(\omega_2)}\over{c}},\quad
+  k'_2 \equiv k'(\omega_2)
+       \equiv {{d}\over{d\omega}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_2},\quad
+  k''_2 \equiv k''(\omega_2)
+        \equiv {{d^2}\over{d\omega^2}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_2}.\cr
+  a'_2 &\equiv a'(\omega_2)
+        \equiv {{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg|_{\omega_2},
+        \quad
+  b''_2 \equiv b''(\omega_2)
+        \equiv
+    \bigg(
+      {{d^2\big(k(\omega)g(\omega)\big)}\over{d\omega^2}}-2k'(\omega)g'(\omega)
+    \bigg)\bigg|_{\omega_2},\cr
+  }
+$$
+
+\subsection{The circularly polarized representation of the wave equation
+            for the pump}
+Finally, we by expressing all fields in the wave equation~\eqref{eq:waveeq70}
+for the temporal envelope of the pump at angular frequency
+$\omega_3=\omega_1+\omega_2$ in the circularly polarized basis from
+Eq.~\eqref{eq:circbasis30} obtain\numberedfootnote{In the presentation of
+  the field equation for the pump, notice that we have the altered order
+  ``$\mp$'' of the circular polarizations, to match the way the pump fields
+  enter Eqs.~\eqref{eq:waveeq80} and~\eqref{eq:waveeq90}, for the idler
+  and signal, respectively. Also notice the absence of complex conjugation
+  of the fields involved in the interaction with the pump beam at
+  $\omega_3=\omega_1+\omega_2$.}
+\par\boxit{
+$$
+  \eqalign{
+   &\Big[
+     {{\partial^2}\over{\partial z^2}}
+       +k^2_3
+       +2ik_3 k'_3 {{\partial}\over{\partial t}}
+       -k_3 k''_3 {{\partial^2}\over{\partial t^2}}
+       \mp i\Big(
+          {{\omega^2_3\gamma_3}\over{c^2}}
+          +2ia'_3 {{\partial}\over{\partial t}}
+          -b''_3 {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial}\over{\partial z}}
+    \Big] E^{\mp}_{\omega_3}
+    \cr&\hskip220pt
+      = -\Big({{\omega_3}\over{c}}\Big)^2
+      \Big(p_3 \mp iq_3 {{\partial}\over{\partial z}}\Big)
+      \big(E^{\pm}_{\omega_1}E^{\pm}_{\omega_2}\big).\cr
+  }
+  \eqdef{eq:waveeq100}
+$$
+}\noindent
+with, just to recapitulate, the short-hand notation for the coefficients as
+$$
+  \eqalign{
+  n_3&=n(\omega_3)=[1+\chi_{xx}(-\omega_3;\omega_3)]^{1/2},\qquad
+    \gamma_3=\gamma_{xyz}(-\omega_3;\omega_3),\cr
+  p_3 &= 2^{1/2}\chi_{xxx}(-\omega_3;\omega_1,\omega_2),\qquad
+  q_3 = 2^{1/2}\gamma_{xxyz}(-\omega_3;\omega_1,\omega_2),\cr
+  k_3 &\equiv k(\omega_3)
+       \equiv {{\omega_3 n(\omega_3)}\over{c}},\quad
+  k'_3 \equiv k'(\omega_3)
+       \equiv {{d}\over{d\omega}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_3},\quad
+  k''_3 \equiv k''(\omega_3)
+        \equiv {{d^2}\over{d\omega^2}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_3}.\cr
+  a'_3 &\equiv a'(\omega_3)
+        \equiv {{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg|_{\omega_3},
+        \quad
+  b''_3 \equiv b''(\omega_3)
+        \equiv
+    \bigg(
+      {{d^2\big(k(\omega)g(\omega)\big)}\over{d\omega^2}}-2k'(\omega)g'(\omega)
+    \bigg)\bigg|_{\omega_3},\cr
+  }
+$$
+
+\section{Separating the total fields into their forward and backward
+         traveling components}
+We will now move from the description of the total idler, signal and pump fields
+as described by Eqs.~\eqref{eq:waveeq80}--\eqref{eq:waveeq100} and will from now
+separate them into their forward and backward traveling components.
+Already now, we know that the forward traveling LCP/RCP waves will follow as
+$\exp(i(\omega/c)(n_k\pm\gamma_k)z)$ while the backward traveling waves will
+follow $\exp(-i(\omega/c)(n_k\pm\gamma_k)z)$; however, we will for the sake of
+simplicity, and to make the derivation step-wise, we will make the first
+separation as
+$$
+  E^{\pm}_{\omega_k}(z,t)=
+    E^{f\pm}_{\omega_k}(z,t)\exp(i(\omega n_k/c)z)
+    +E^{b\mp}_{\omega_k}(z,t)\exp(-i(\omega n_k/c)z),
+  \eqdef{eq:waveeq110}
+$$
+for $k=1,2,3$ for the idler, signal and pump, respectively. In this separation,
+we will in the envelopes $E^{f\pm}_{\omega_k}(z,t)$ and $E^{b\pm}_{\omega_k}(z,t)$
+hence still have the phase dependence from the gyrotropy ($\gamma_k$
+coefficients) present, something which we will sort out in the next step of
+reduction of the complexity of the wave equations for the parametric process.
+
+By inserting the separation described by Eq.~\eqref{eq:waveeq110} into the
+wave equation~\eqref{eq:waveeq80} for the idler at angular frequency~$\omega_1$,
+we obtain
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}}
+       \pm {{\omega_1 \gamma_1}\over{2cn_1}}
+       \Big(
+         {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}}+ik_1 E^{f\pm}_{\omega_1}
+       \Big)
+       +\Big(
+         (k'_1\mp a'_1) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_1\mp b''_1) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\pm}_{\omega_1}
+       \cr&\hskip180pt
+       \pm\Big(
+         i{{a'_1}\over{k_1}} {{\partial}\over{\partial t}}
+         -{{b''_1}\over{2k_1}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(i{{\omega_1 n_1}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\mp}_{\omega_1}}\over{\partial z}}
+       \pm {{\omega_1 \gamma_1}\over{2cn_1}}
+       \Big(
+         {{\partial E^{b\mp}_{\omega_1}}\over{\partial z}}-ik_1 E^{b\mp}_{\omega_1}
+       \Big)
+       +\Big(
+         (k'_1\pm a'_1) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_1\pm b''_1) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\mp}_{\omega_1}
+       \cr&\hskip180pt
+       \pm\Big(
+         i{{a'_1}\over{k_1}} {{\partial}\over{\partial t}}
+         -{{b''_1}\over{2k_1}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{b\mp}_{\omega_1}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(-i{{\omega_1 n_1}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_1}\over{2cn_1}}
+      \Big(p_1 \pm iq_1 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\mp}_{\omega_3} E^{f\pm*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\mp}_{\omega_3} E^{b\mp*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{f\pm*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{b\mp*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq120}
+$$
+while by inserting Eq.~\eqref{eq:waveeq110} into the wave
+equation~\eqref{eq:waveeq90} for the signal at angular frequency~$\omega_2$,
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\pm}_{\omega_2}}\over{\partial z}}
+       \pm {{\omega_2 \gamma_2}\over{2cn_2}}
+       \Big(
+         {{\partial E^{f\pm}_{\omega_2}}\over{\partial z}}+ik_2 E^{f\pm}_{\omega_2}
+       \Big)
+       +\Big(
+         (k'_2\mp a'_2) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_2\mp b''_2) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\pm}_{\omega_2}
+       \cr&\hskip180pt
+       \pm\Big(
+         i{{a'_2}\over{k_2}} {{\partial}\over{\partial t}}
+         -{{b''_2}\over{2k_2}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{f\pm}_{\omega_2}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(i{{\omega_2 n_2}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\mp}_{\omega_2}}\over{\partial z}}
+       \pm {{\omega_2 \gamma_2}\over{2cn_2}}
+       \Big(
+         {{\partial E^{b\mp}_{\omega_2}}\over{\partial z}}-ik_2 E^{b\mp}_{\omega_2}
+       \Big)
+       +\Big(
+         (k'_2\pm a'_2) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_2\pm b''_2) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\mp}_{\omega_2}
+       \cr&\hskip180pt
+       \pm\Big(
+         i{{a'_2}\over{k_2}} {{\partial}\over{\partial t}}
+         -{{b''_2}\over{2k_2}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{b\mp}_{\omega_2}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(-i{{\omega_2 n_2}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_2}\over{2cn_2}}
+      \Big(p_2 \pm iq_2 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\mp}_{\omega_3} E^{f\pm*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\mp}_{\omega_3} E^{b\mp*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{f\pm*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{b\mp*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq122}
+$$
+and finally, by inserting Eq.~\eqref{eq:waveeq110} into the wave
+equation~\eqref{eq:waveeq100} for the pump at angular frequency~$\omega_3$,
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\mp}_{\omega_3}}\over{\partial z}}
+       \mp {{\omega_3 \gamma_3}\over{2cn_3}}
+       \Big(
+         {{\partial E^{f\mp}_{\omega_3}}\over{\partial z}}+ik_3 E^{f\mp}_{\omega_3}
+       \Big)
+       +\Big(
+         (k'_3\pm a'_3) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_3\pm b''_3) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\mp}_{\omega_3}
+       \cr&\hskip180pt
+       \pm\Big(
+         i{{a'_3}\over{k_3}} {{\partial}\over{\partial t}}
+         -{{b''_3}\over{2k_3}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{f\mp}_{\omega_3}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(i{{\omega_3 n_3}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\pm}_{\omega_3}}\over{\partial z}}
+       \mp {{\omega_3 \gamma_3}\over{2cn_3}}
+       \Big(
+         {{\partial E^{b\pm}_{\omega_3}}\over{\partial z}}-ik_3 E^{b\pm}_{\omega_3}
+       \Big)
+       +\Big(
+         (k'_3\mp a'_3) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_3\mp b'_3) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\pm}_{\omega_3}
+       \cr&\hskip180pt
+       \mp\Big(
+         i{{a''_3}\over{k_3}} {{\partial}\over{\partial t}}
+         -{{b''_3}\over{2k_3}} {{\partial^2}\over{\partial t^2}}
+       \Big) {{\partial E^{b\pm}_{\omega_3}}\over{\partial z}}
+    \bigg\}
+    \exp\Big(-i{{\omega_3 n_3}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_3}\over{2cn_3}}
+      \Big(p_3 \mp iq_3 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\pm}_{\omega_1} E^{f\pm}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\mp}_{\omega_1} E^{b\mp}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\mp}_{\omega_1} E^{f\pm}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\mp}_{\omega_1} E^{b\mp}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq124}
+$$
+where we already from the beginning dropped the second-order spatial derivative
+of the fields, by applying the slowly-varying envelope approximation to the
+forward and backward travelling components,
+$$
+  \Big|{{\partial^2 E^{f\pm}_{\omega_1}}\over{\partial z^2}}\Big|
+    \ll\Big|2\Big({{\omega_1 n_1}\over{c}}\Big)
+           {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}}\Big|,\qquad
+  \Big|{{\partial^2 E^{b\mp}_{\omega_1}}\over{\partial z^2}}\Big|
+    \ll\Big|2\Big({{\omega_1 n_1}\over{c}}\Big)
+           {{\partial E^{b\mp}_{\omega_1}}\over{\partial z}}\Big|,\qquad
+  \hbox{etc.}
+  \eqdef{eq:waveeq130}
+$$
+In the rather complex coupled wave equation~\eqref{eq:waveeq120}, we could in
+principle already at this stage start to project out terms which are closest
+to phase matching, in order to simplify the algebra. However, we will keep the
+mixed form in the right-hand side for the sake of keeping generality and allow
+the very same equations to be used in co-propagating as well as
+counter-propagating optical parametric amplification.
+
+In the former, {\it co-propagating} case, we have the classical setup where the
+idler~($\omega_1$), signal~($\omega_2$) and pump~($\omega_3$) fields all have
+their interaction taking place while propagating in the same direction. This
+direction may be either in the forward or backward direction, as in the case
+with multiply-resonant OPO. In other words, in this classic case, the involved
+triplet of fields in Eq.~\eqref{eq:waveeq120} for the parametric process is
+typically $(E^{f\pm}_{\omega_1},E^{f\pm*}_{\omega_2},E^{f\mp}_{\omega_3})$.
+
+On the other hand in the latter, {\it counter-propagating} case, the
+idler~($\omega_1$) and pump~($\omega_3$) propagate in, say, the positive
+direction, while the signal~($\omega_2$) propagates in the opposite, negative
+direction. Thus, by keeping these options open for a while, we may accept the
+added complexity in algebraic handling for the sake of getting both cases
+covered by the same analysis and reduction of terms.
+In other words, in this counter-propagating case, the involved triplet of
+fields in Eq.~\eqref{eq:waveeq120} for the parametric process is instead
+typically $(E^{f\pm}_{\omega_1},E^{b\mp*}_{\omega_2},E^{f\mp}_{\omega_3})$.
+
+In addition to the standard slowly-varying envelope approximation, we may
+also notice that the remaining phase and amplitude changes of the remaining
+envelopes in any practical applications change over a length scale which is
+radically longer than the wavelength of light; hence we may safely assume that
+$$
+  \Big|{{\partial E^{f\pm}_{\omega_j}}\over{\partial z}}\Big|
+    \ll \Big|\Big({{\omega_j n_j}\over{c}}\Big)E^{f\pm}_{\omega_j}\Big|,\qquad
+  \Big|{{\partial E^{b\mp}_{\omega_j}}\over{\partial z}}\Big|
+    \ll \Big|\Big({{\omega_j n_j}\over{c}}\Big)E^{b\mp}_{\omega_j}\Big|,
+  \eqdef{eq:waveeq150}
+$$
+for $j=1,2,3$. Also, we take the opportunity to drop all cross-differential
+dispersive terms such as
+$$
+  \Big(
+    i{{a'_1}\over{k_1}} {{\partial}\over{\partial t}}
+      -{{b''_1}\over{2k_1}} {{\partial^2}\over{\partial t^2}}
+  \Big) {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}},\qquad
+  \Big(
+    i{{a'_2}\over{k_2}} {{\partial}\over{\partial t}}
+      -{{b''_2}\over{2k_2}} {{\partial^2}\over{\partial t^2}}
+  \Big) {{\partial E^{f\pm}_{\omega_2}}\over{\partial z}},\qquad\hbox{etc.}
+$$
+Thus, just to take this somewhat cumbersome algebra step-by-step,
+Eq.~\eqref{eq:waveeq120} is for the idler at angular frequency~$\omega_1$
+reduced to
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\pm}_{\omega_1}}\over{\partial z}}
+       \pm i{{\omega^2_1 \gamma_1}\over{2c^2}} E^{f\pm}_{\omega_1}
+       +\Big(
+         (k'_1\mp a'_1) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_1\mp b''_1) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\pm}_{\omega_1}
+    \bigg\}
+    \exp\Big(i{{\omega_1 n_1}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\mp}_{\omega_1}}\over{\partial z}}
+       \mp i{{\omega^2_1 \gamma_1}\over{2c^2}} E^{b\mp}_{\omega_1}
+       +\Big(
+         (k'_1\pm a'_1) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_1\pm b''_1) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\mp}_{\omega_1}
+    \bigg\}
+    \exp\Big(-i{{\omega_1 n_1}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_1}\over{2cn_1}}
+      \Big(p_1 \pm iq_1 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\mp}_{\omega_3} E^{f\pm*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\mp}_{\omega_3} E^{b\mp*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{f\pm*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{b\mp*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq160}
+$$
+while Eq.~\eqref{eq:waveeq122} for the signal at angular frequency~$\omega_2$
+is reduced to
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\pm}_{\omega_2}}\over{\partial z}}
+       \pm i{{\omega^2_2 \gamma_2}\over{2c^2}} E^{f\pm}_{\omega_2}
+       +\Big(
+         (k'_2\mp a'_2) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_2\mp b''_2) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\pm}_{\omega_2}
+    \bigg\}
+    \exp\Big(i{{\omega_2 n_2}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\mp}_{\omega_2}}\over{\partial z}}
+       \mp i{{\omega^2_2 \gamma_2}\over{2c^2}} E^{b\mp}_{\omega_2}
+       +\Big(
+         (k'_2\pm a'_2) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_2\pm b''_2) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\mp}_{\omega_2}
+    \bigg\}
+    \exp\Big(-i{{\omega_2 n_2}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_2}\over{2cn_2}}
+      \Big(p_2 \pm iq_2 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\mp}_{\omega_3} E^{f\pm*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\mp}_{\omega_3} E^{b\mp*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{f\pm*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\pm}_{\omega_3} E^{b\mp*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq162}
+$$
+and, finally, that Eq.~\eqref{eq:waveeq124} for the pump at angular
+frequency~$\omega_3$ is reduced to
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial E^{f\mp}_{\omega_3}}\over{\partial z}}
+       \mp i{{\omega^2_3 \gamma_3}\over{2c^2}} E^{f\mp}_{\omega_3}
+       +\Big(
+         (k'_3\pm a'_3) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_3\pm b''_3) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{f\mp}_{\omega_3}
+    \bigg\}
+    \exp\Big(i{{\omega_3 n_3}\over{c}}z\Big)\cr
+    &\quad+\bigg\{
+       -{{\partial E^{b\pm}_{\omega_3}}\over{\partial z}}
+       \pm i{{\omega^2_3 \gamma_3}\over{2c^2}} E^{b\pm}_{\omega_3}
+       +\Big(
+         (k'_3\mp a'_3) {{\partial}\over{\partial t}}
+         +{{i}\over{2}}(k''_3\mp b''_3) {{\partial^2}\over{\partial t^2}}
+       \Big) E^{b\pm}_{\omega_3}
+    \bigg\}
+    \exp\Big(-i{{\omega_3 n_3}\over{c}}z\Big)
+    \cr&\hskip80pt
+      = i{{\omega_3}\over{2cn_3}}
+      \Big(p_3 \mp iq_3 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        E^{f\pm}_{\omega_1} E^{f\pm}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{f\pm}_{\omega_1} E^{b\mp}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\mp}_{\omega_1} E^{f\pm}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+    \cr&\hskip200pt
+       +E^{b\mp}_{\omega_1} E^{b\mp}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+          \Big)
+      \Big].\cr
+  }
+  \eqdef{eq:waveeq164}
+$$
+In Eqs.~\eqref{eq:waveeq160}--\eqref{eq:waveeq164}, we may find straight away,
+from the appearance of the terms with coefficients $\gamma_1$, $\gamma_2$ and
+$\gamma_3$, that the gyrotropic nature of the forward and backward traveling
+wave envelopes can be separated by the ansatz
+$$
+  \eqalignno{
+    E^{f\pm}_{\omega_k}(z,t)&=A^{f\pm}_{\omega_k}(z,t)
+      \exp\Big(\mp i{{\omega^2_k\gamma_k}\over{2c^2}}z\Big),
+        \eqdefn{eq:waveeq170}&\eqsubdef{eq:waveeq170a}\cr
+    E^{b\mp}_{\omega_k}(z,t)&=A^{b\mp}_{\omega_k}(z,t)
+      \exp\Big(\mp i{{\omega^2_k\gamma_k}\over{2c^2}}z\Big),
+        &\eqsubdef{eq:waveeq170b}\cr
+  }
+$$
+with $k=1,2,3$ for the idler, signal and pump, respectively. This way, carrying
+out the second step in the reduction of the coupled set of nonlinear PDE:s, the
+terms containing the gyration coefficients $\gamma_k$ will be cancelled.
+Notice that in dividing the field into forward and backward traveling
+components, the backward traveling LCP/RCP components will be connected
+to the {\it conjugated} basis vectors ${\bf e}^*_{\pm}$, hence the altered
+order of ``$\mp$'' in ``$E^{b\mp}_{\omega_k}$''.
+
+Thus, by inserting the ansatz of Eq.~\eqref{eq:waveeq170} into
+Eq.~\eqref{eq:waveeq160}, we for the idler at angular frequency~$\omega_1$
+obtain
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}}
+       +(k'_1\mp a'_1) {{\partial A^{f\pm}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\mp b''_1)
+            {{\partial^2 A^{f\pm}_{\omega_1}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(i\Big({{\omega_1 n_1}\over{c}}
+             \mp {{\omega^2_1\gamma_1}\over{2c^2}}\Big)z\Big)
+    \cr&\qquad
+    +\bigg\{
+       -{{\partial A^{b\mp}_{\omega_1}}\over{\partial z}}
+       +(k'_1\pm a'_1) {{\partial A^{b\mp}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\pm b''_1)
+            {{\partial^2 A^{b\mp}_{\omega_1}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(-i\Big({{\omega_1 n_1}\over{c}}z
+             \pm {{\omega^2_1\gamma_1}\over{2c^2}}\Big)z\Big)
+    \cr&\hskip40pt
+      = i{{\omega_1}\over{2cn_1}}
+      \Big(p_1 \pm iq_1 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq180}
+$$
+while we for the signal at angular frequency~$\omega_2$ obtain
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+       +(k'_2\mp a'_2) {{\partial A^{f\pm}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\mp b''_2)
+            {{\partial^2 A^{f\pm}_{\omega_2}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(i\Big({{\omega_2 n_2}\over{c}}
+             \mp {{\omega^2_2\gamma_2}\over{2c^2}}\Big)z\Big)
+    \cr&\qquad
+    +\bigg\{
+       -{{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+       +(k'_2\pm a'_2) {{\partial A^{b\mp}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\pm b''_2)
+            {{\partial^2 A^{b\mp}_{\omega_2}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(-i\Big({{\omega_2 n_2}\over{c}}z
+             \pm {{\omega^2_2\gamma_2}\over{2c^2}}\Big)z\Big)
+    \cr&\hskip40pt
+      = i{{\omega_2}\over{2cn_2}}
+      \Big(p_2 \pm iq_2 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_1\gamma_1}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_1}
+          \exp\Big(
+            i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_1\gamma_1}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}+{{\omega_1 n_1}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_1\gamma_1}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_1}
+          \exp\Big(
+            -i\Big({{\omega_3 n_3}\over{c}}-{{\omega_1 n_1}\over{c}}\Big)z
+            \pm i\Big({{\omega^2_3\gamma_3}\over{2c^2}}
+                       +{{\omega^2_1\gamma_1}\over{2c^2}}\Big)z
+          \Big)
+      \Big],\cr
+  }
+  \eqdef{eq:waveeq182}
+$$
+and finally for the pump at angular frequency~$\omega_3$,
+$$
+  \eqalign{
+    &\bigg\{
+       {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}}
+       +(k'_3\pm a'_3) {{\partial A^{f\mp}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\pm b''_3)
+            {{\partial^2 A^{f\mp}_{\omega_3}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(i\Big({{\omega_3 n_3}\over{c}}
+             \pm {{\omega^2_3\gamma_3}\over{2c^2}}\Big)z\Big)
+    \cr&\qquad
+    +\bigg\{
+       -{{\partial A^{b\pm}_{\omega_3}}\over{\partial z}}
+       +(k'_3\mp a'_3) {{\partial A^{b\pm}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\mp b''_3)
+            {{\partial^2 A^{b\pm}_{\omega_3}}\over{\partial t^2}}
+    \bigg\}
+    \exp\Big(-i\Big({{\omega_3 n_3}\over{c}}z
+             \mp {{\omega^2_3\gamma_3}\over{2c^2}}\Big)z\Big)
+    \cr&\hskip40pt
+      = i{{\omega_3}\over{2cn_3}}
+      \Big(p_3 \mp iq_3 {{\partial}\over{\partial z}}\Big)
+      \Big[
+        A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+            \mp i\Big({{\omega^2_1\gamma_1}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{f\pm}_{\omega_1} A^{b\mp}_{\omega_2}
+          \exp\Big(
+            i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+            \mp i\Big({{\omega^2_1\gamma_1}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\mp}_{\omega_1} A^{f\pm}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}-{{\omega_2 n_2}\over{c}}\Big)z
+            \mp i\Big({{\omega^2_1\gamma_1}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+    \cr&\hskip140pt
+       +A^{b\mp}_{\omega_1} A^{b\mp}_{\omega_2}
+          \exp\Big(
+            -i\Big({{\omega_1 n_1}\over{c}}+{{\omega_2 n_2}\over{c}}\Big)z
+            \mp i\Big({{\omega^2_1\gamma_1}\over{2c^2}}
+                       +{{\omega^2_2\gamma_2}\over{2c^2}}\Big)z
+          \Big)
+      \Big].\cr
+  }
+  \eqdef{eq:waveeq184}
+$$
+In these expressions, notice how the exponents of the right-hand sides of the
+idler, signal and pump equations all have the same sign alteration and same
+coefficients for the gyrotropic contribution to the phase evolution, for the
+forward as well as backward traveling components.
+It should here be particularly emphasized that in the right-hand sides of
+Eqs.~\eqref{eq:waveeq180}, the spatial derivatives {\it operate on the entire
+nonlinear products acting as source terms}, including the complex-valued
+exponential involving the phase mismatch.
+
+We may now assume that the idler is not self-interacting, and that we may
+without compromising generality project out the forward and backward traveling
+waves by multiplying by respective complex-valued exponents in the left-hand
+side and average over a few spatial periods of oscillation of the light, in
+the order of a wavelength. This way, we for the envelopes
+$A^{f\pm}_{\omega_k}=A^{f\pm}_{\omega_k}(z,t)$ and
+$A^{b\mp}_{\omega_k}=A^{b\mp}_{\omega_k}(z,t)$ of the counter-propagating waves
+obtain the following system, starting with the {\it forward traveling
+components} of the idler~($\omega_1$), signal~($\omega_2$) and
+pump~($\omega_3$) as
+$$
+  \eqalignno{
+    &{{\partial A^{f\pm}_{\omega_1}}\over{\partial z}}
+       +(k'_1\mp a'_1) {{\partial A^{f\pm}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\mp b''_1)
+            {{\partial^2 A^{f\pm}_{\omega_1}}\over{\partial t^2}}
+    \eqdefn{eq:waveeq190}&\eqsubdef{eq:waveeq190a}\cr
+    &\hskip40pt
+    =i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_2}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_2}}\over{\partial z}}
+          +i(k_3-k_2\pm (\beta_3+\beta_2)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_2-k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_2}
+          +A^{f\mp}_{\omega_3} {{\partial A^{b\mp*}_{\omega_2}}\over{\partial z}}
+          +i(k_3+k_2\pm (\beta_3+\beta_2)) A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3+k_2-k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_2}
+          +A^{b\pm}_{\omega_3} {{\partial A^{f\pm*}_{\omega_2}}\over{\partial z}}
+          +i(-k_3-k_2\pm (\beta_3+\beta_2)) A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3+k_2+k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_2}
+          +A^{b\pm}_{\omega_3} {{\partial A^{b\mp*}_{\omega_2}}\over{\partial z}}
+          +i(-k_3+k_2\pm (\beta_3+\beta_2)) A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3-k_2+k_1)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+       +(k'_2\mp a'_2) {{\partial A^{f\pm}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\mp b''_2)
+            {{\partial^2 A^{f\pm}_{\omega_2}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq190b}\cr
+    &\hskip40pt
+    =i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_1}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_1}}\over{\partial z}}
+          +i(k_3-k_1\pm (\beta_3+\beta_1)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_1-k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_1}
+          +A^{f\mp}_{\omega_3} {{\partial A^{b\mp*}_{\omega_1}}\over{\partial z}}
+          +i(k_3+k_1\pm (\beta_3+\beta_1)) A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3+k_1-k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_1}
+          +A^{b\pm}_{\omega_3} {{\partial A^{f\pm*}_{\omega_1}}\over{\partial z}}
+          +i(-k_3-k_1\pm (\beta_3+\beta_1)) A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3+k_1+k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_1}
+          +A^{b\pm}_{\omega_3} {{\partial A^{b\mp*}_{\omega_1}}\over{\partial z}}
+          +i(-k_3+k_1\pm (\beta_3+\beta_1)) A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3-k_1+k_2)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\mp}_{\omega_3}}\over{\partial z}}
+       +(k'_3\pm a'_3) {{\partial A^{f\mp}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\pm b''_3)
+            {{\partial^2 A^{f\mp}_{\omega_3}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq190c}\cr
+    &\hskip40pt
+    =i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}} A^{f\pm}_{\omega_2}
+          +A^{f\pm}_{\omega_1} {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+          +i(k_1+k_2\mp (\beta_1+\beta_2)) A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_1+k_2-k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{f\pm}_{\omega_1} A^{b\mp}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}} A^{b\mp}_{\omega_2}
+          +A^{f\pm}_{\omega_1} {{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+          +i(k_1-k_2\mp (\beta_1+\beta_2)) A^{f\pm}_{\omega_1} A^{b\mp}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_1-k_2-k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{b\mp}_{\omega_1} A^{f\pm}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{b\mp}_{\omega_1}}\over{\partial z}} A^{f\pm}_{\omega_2}
+          +A^{b\mp}_{\omega_1} {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+          +i(-k_1+k_2\mp (\beta_1+\beta_2)) A^{b\mp}_{\omega_1} A^{f\pm}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_1-k_2+k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{b\mp}_{\omega_1} A^{b\mp}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{b\mp}_{\omega_1}}\over{\partial z}} A^{b\mp}_{\omega_2}
+          +A^{b\mp}_{\omega_1} {{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+          +i(-k_1-k_2\mp (\beta_1+\beta_2)) A^{b\mp}_{\omega_1} A^{b\mp}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_1+k_2+k_3)z\mp i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+  }
+$$
+where we defined
+$$
+  k_j\equiv {{\omega_j n_j}\over{c}},\qquad
+  \beta_j\equiv {{\omega^2_j\gamma_j}\over{2c^2}},
+  \eqdef{eq:waveeq200}
+$$
+with, as previously, $j=1,2,3$ denoting the idler, signal and pump,
+respectively.
+Notice the way the phase matching in Eqs.~\eqref{eq:waveeq190} appear,
+with the phase mismatch from the electric-dipolar parts occurring with
+various combinations of the wave vector magnitudes $k_j$, while the gyrotropic,
+non-local contributions all appear as the sum $\beta_1+\beta_2+\beta_3$.
+
+Also notice how the coefficients governing the group velocity ($k'_j\pm a'_j$)
+and group velocity dispersion ($k''_j\pm b''_j$) now always appear pair-wise
+with ``$\pm$'' discriminating between the LCP/RCP components, just as for the
+differential phase velocity for LCP/RCP.
+
+In similar, the {\it backward traveling components} are obtained from
+Eqs.~\eqref{eq:waveeq180}--\eqref{eq:waveeq184} by projection, starting
+with the idler at angular frequency~$\omega_1$,
+$$
+  \eqalignno{
+   &-{{\partial A^{b\mp}_{\omega_1}}\over{\partial z}}
+       +(k'_1\pm a'_1) {{\partial A^{b\mp}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\pm b''_1)
+            {{\partial^2 A^{b\mp}_{\omega_1}}\over{\partial t^2}}
+    \eqdefn{eq:waveeq210}&\eqsubdef{eq:waveeq210a}\cr
+    &\hskip40pt
+    =i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_2}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_2}}\over{\partial z}}
+          +i(k_3-k_2\pm (\beta_3+\beta_2)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_2+k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_2}
+          +A^{f\mp}_{\omega_3} {{\partial A^{b\mp*}_{\omega_2}}\over{\partial z}}
+          +i(k_3+k_2\pm (\beta_3+\beta_2)) A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3+k_2+k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_2}
+          +A^{b\pm}_{\omega_3} {{\partial A^{f\pm*}_{\omega_2}}\over{\partial z}}
+          +i(-k_3-k_2\pm (\beta_3+\beta_2)) A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3+k_2-k_1)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_2}
+          +A^{b\pm}_{\omega_3} {{\partial A^{b\mp*}_{\omega_2}}\over{\partial z}}
+          +i(-k_3+k_2\pm (\beta_3+\beta_2)) A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3-k_2-k_1)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+   &-{{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+       +(k'_2\pm a'_2) {{\partial A^{b\mp}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\pm b''_2)
+            {{\partial^2 A^{b\mp}_{\omega_2}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq210b}\cr
+    &\hskip40pt
+    =i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_1}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_1}}\over{\partial z}}
+          +i(k_3-k_1\pm (\beta_3+\beta_1)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_1+k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_1}
+          +A^{f\mp}_{\omega_3} {{\partial A^{b\mp*}_{\omega_1}}\over{\partial z}}
+          +i(k_3+k_1\pm (\beta_3+\beta_1)) A^{f\mp}_{\omega_3} A^{b\mp*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3+k_1+k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_1}
+          +A^{b\pm}_{\omega_3} {{\partial A^{f\pm*}_{\omega_1}}\over{\partial z}}
+          +i(-k_3-k_1\pm (\beta_3+\beta_1)) A^{b\pm}_{\omega_3} A^{f\pm*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3+k_1-k_2)z\pm i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{b\pm}_{\omega_3}}\over{\partial z}} A^{b\mp*}_{\omega_1}
+          +A^{b\pm}_{\omega_3} {{\partial A^{b\mp*}_{\omega_1}}\over{\partial z}}
+          +i(-k_3+k_1\pm (\beta_3+\beta_1)) A^{b\pm}_{\omega_3} A^{b\mp*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_3-k_1-k_2)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+   &-{{\partial A^{b\pm}_{\omega_3}}\over{\partial z}}
+       +(k'_3\mp a'_3) {{\partial A^{b\pm}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\mp b''_3)
+            {{\partial^2 A^{b\pm}_{\omega_3}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq210c}\cr
+    &\hskip40pt
+    =i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}} A^{f\pm}_{\omega_2}
+          +A^{f\pm}_{\omega_1} {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+          +i(k_1+k_2\mp (\beta_1+\beta_2)) A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_1+k_2+k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{f\pm}_{\omega_1} A^{b\mp}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}} A^{b\mp}_{\omega_2}
+          +A^{f\pm}_{\omega_1} {{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+          +i(k_1-k_2\mp (\beta_1+\beta_2)) A^{f\pm}_{\omega_1} A^{b\mp}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_1-k_2+k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{b\mp}_{\omega_1} A^{f\pm}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{b\mp}_{\omega_1}}\over{\partial z}} A^{f\pm}_{\omega_2}
+          +A^{b\mp}_{\omega_1} {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+          +i(-k_1+k_2\mp (\beta_1+\beta_2)) A^{b\mp}_{\omega_1} A^{f\pm}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_1-k_2-k_3)z\mp i(\beta_3+\beta_2+\beta_1)z)
+    &\cr
+    &\hskip40pt
+    +i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{b\mp}_{\omega_1} A^{b\mp}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{b\mp}_{\omega_1}}\over{\partial z}} A^{b\mp}_{\omega_2}
+          +A^{b\mp}_{\omega_1} {{\partial A^{b\mp}_{\omega_2}}\over{\partial z}}
+          +i(-k_1-k_2\mp (\beta_1+\beta_2)) A^{b\mp}_{\omega_1} A^{b\mp}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(-i(k_1+k_2-k_3)z\mp i(\beta_3+\beta_2+\beta_1)z).
+    &\cr
+  }
+$$
+Just as previously for the forward traveling components, the phase mismatch from
+the electric-dipolar parts occurring with various combinations of the wave
+vector magnitudes $k_j$, while the gyrotropic, non-local contributions all
+appear as the sum $\beta_1+\beta_2+\beta_3$.
+
+\section{Co-directional optical parametric amplification}
+In the classical, co-directional configuration of optical parametric
+amplification, the phase matching will occur for the combination
+$k_3-k_2-k_1\sim0$ of electric dipolar wave vector magnitudes.
+In this particular case, for the moment just focusing on the forward traveling
+components, the system described by Eqs.~\eqref{eq:waveeq190} will after
+averaging over a few spatial periods of the light reduce to
+$$
+  \eqalignno{
+    &{{\partial A^{f\pm}_{\omega_1}}\over{\partial z}}
+       +(k'_1\mp a'_1) {{\partial A^{f\pm}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\mp b''_1)
+            {{\partial^2 A^{f\pm}_{\omega_1}}\over{\partial t^2}}
+    \eqdefn{eq:waveeq220}&\eqsubdef{eq:waveeq220a}\cr
+    &\hskip40pt
+    =i{{\omega_1}\over{2cn_1}}
+    \Big[
+      p_1 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \pm i q_1\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_2}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_2}}\over{\partial z}}
+          +i(k_3-k_2\pm (\beta_3+\beta_2)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_2-k_1)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+       +(k'_2\mp a'_2) {{\partial A^{f\pm}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\mp b''_2)
+            {{\partial^2 A^{f\pm}_{\omega_2}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq220b}\cr
+    &\hskip40pt
+    =i{{\omega_2}\over{2cn_2}}
+    \Big[
+      p_2 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \pm i q_2\Big(
+          {{\partial A^{f\mp}_{\omega_3}}\over{\partial z}} A^{f\pm*}_{\omega_1}
+          +A^{f\mp}_{\omega_3} {{\partial A^{f\pm*}_{\omega_1}}\over{\partial z}}
+          +i(k_3-k_1\pm (\beta_3+\beta_1)) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_3-k_1-k_2)z\pm i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\mp}_{\omega_3}}\over{\partial z}}
+       +(k'_3\pm a'_3) {{\partial A^{f\mp}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\pm b''_3)
+            {{\partial^2 A^{f\mp}_{\omega_3}}\over{\partial t^2}}
+    &\eqsubdef{eq:waveeq220c}\cr
+    &\hskip40pt
+    =i{{\omega_3}\over{2cn_3}}
+    \Big[
+      p_3 A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+      \mp i q_3\Big(
+          {{\partial A^{f\pm}_{\omega_1}}\over{\partial z}} A^{f\pm}_{\omega_2}
+          +A^{f\pm}_{\omega_1} {{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+          +i(k_1+k_2\mp (\beta_1+\beta_2)) A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+        \Big)
+    \Big]
+    &\cr
+    &\hskip200pt
+        \times\exp(i(k_1+k_2-k_3)z\mp i(\beta_3+\beta_2+\beta_1)z),
+    &\cr
+  }
+$$
+where the phase mismatch is described by the terms
+$$
+  \eqalignno{
+    \Delta\alpha&\equiv k_3-k_2-k_1
+      ={{\omega_3 n_3}\over{c}}
+        -{{\omega_2 n_2}\over{c}}
+        -{{\omega_1 n_1}\over{c}},
+    \eqdefn{eq:waveeq230}&\eqsubdef{eq:waveeq230a}\cr
+    \Delta\beta&\equiv \beta_3+\beta_2+\beta_1
+      ={{\omega^2_1\gamma_1}\over{2c^2}}
+      +{{\omega^2_2\gamma_2}\over{2c^2}}
+      +{{\omega^2_3\gamma_3}\over{2c^2}}.
+    &\eqsubdef{eq:waveeq230b}\cr
+  }
+$$
+Again, we may in Eqs.~\eqref{eq:waveeq220} safely consider the rate of change of
+the field envelopes in the right-hand sides to be considerably slower than than
+the order of the involved wavelengths,
+$$
+  \Big|{{\partial}\over{\partial z}}\Big|\ll\big|k_3-k_2\big|,\qquad
+  \Big|{{\partial}\over{\partial z}}\Big|\ll\big|k_3-k_1\big|,\qquad
+  \Big|{{\partial}\over{\partial z}}\Big|\ll\big|k_1+k_2\big|.
+  \eqdef{eq:waveeq240}
+$$
+Also, we notice that the gyration coefficients $\beta_k$ all are small in
+comparison to the magnitude of the wave vectors, and that we hence may
+assume that
+$$
+  \big|\beta_3+\beta_2\big|\ll\big|k_3-k_2\big|,\qquad
+  \big|\beta_3+\beta_1\big|\ll\big|k_3-k_1\big|,\qquad
+  \big|\beta_1+\beta_2\big|\ll\big|k_1+k_2\big|.
+  \eqdef{eq:waveeq250}
+$$
+Including these simplifications, we arrive at the simplified form for the
+forward traveling components as
+\par\boxit{
+$$
+  \eqalignno{
+    &{{\partial A^{f\pm}_{\omega_1}}\over{\partial z}}
+       +(k'_1\mp a'_1) {{\partial A^{f\pm}_{\omega_1}}\over{\partial t}}
+       +{{i}\over{2}} (k''_1\mp b''_1)
+            {{\partial^2 A^{f\pm}_{\omega_1}}\over{\partial t^2}}
+    \cr&\hskip100pt
+    =i{{\omega_1}\over{2cn_1}}
+      \big(p_1 \mp q_1(k_3-k_2)\big) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+      \exp(i(\Delta\alpha\pm\Delta\beta)z),
+      \eqdefn{eq:waveeq260}&\eqsubdef{eq:waveeq260a}\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\pm}_{\omega_2}}\over{\partial z}}
+       +(k'_2\mp a'_2) {{\partial A^{f\pm}_{\omega_2}}\over{\partial t}}
+       +{{i}\over{2}} (k''_2\mp b''_2)
+            {{\partial^2 A^{f\pm}_{\omega_2}}\over{\partial t^2}}
+    \cr&\hskip100pt
+    =i{{\omega_2}\over{2cn_2}}
+      \big(p_2 \mp q_2(k_3-k_1)\big) A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+      \exp(i(\Delta\alpha\pm\Delta\beta)z),
+    &\eqsubdef{eq:waveeq260b}\cr
+%
+% --------------------------------------------------------------
+%
+    &{{\partial A^{f\mp}_{\omega_3}}\over{\partial z}}
+       +(k'_3\pm a'_3) {{\partial A^{f\mp}_{\omega_3}}\over{\partial t}}
+       +{{i}\over{2}} (k''_3\pm b''_3)
+            {{\partial^2 A^{f\mp}_{\omega_3}}\over{\partial t^2}}
+    \cr&\hskip100pt
+    =i{{\omega_3}\over{2cn_3}}
+      \big(p_3 \pm q_3(k_1+k_2)\big) A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+      \exp(-i(\Delta\alpha\pm\Delta\beta)z).
+    &\eqsubdef{eq:waveeq260c}\cr
+  }
+$$
+}\noindent
+%where we for the sake of simplicity in notation from now on will introduce the
+%coefficients
+%$$
+%  k'^{\pm}_j \equiv k'_j\mp a_j,\qquad
+%  k''^{\pm}_j \equiv k''_j\mp b_j,\qquad j=1,2,3,
+%  \eqdef{eq:waveeq262}
+%$$
+%for the LCP/RCP-discriminating group velovity and group velovity dispersion.
+
+\section{Pulsed co-directional optical parametric amplification in a moving
+         reference frame}
+With a starting point in Eqs.~\eqref{eq:waveeq260}, we will now concentrate on
+the model
+$$
+  \eqalignno{
+    &\Big({{\partial}\over{\partial z}}
+       +(k'_1\mp a'_1) {{\partial}\over{\partial t}}
+       +{{i}\over{2}}(k''_1\mp b''_1)
+          {{\partial^2}\over{\partial t^2}}\Big) A^{f\pm}_{\omega_1}
+       =i\kappa^{\pm}_1 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2} \exp(i\Delta k_{\pm} z),
+     \eqdefn{eq:waveeq270}&\eqsubdef{eq:waveeq270a}\cr
+    &\Big({{\partial}\over{\partial z}}
+       +(k'_2\mp a'_2) {{\partial}\over{\partial t}}
+       +{{i}\over{2}}(k''_2\mp b''_2)
+          {{\partial^2}\over{\partial t^2}}\Big) A^{f\pm}_{\omega_2}
+       =i\kappa^{\pm}_2 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1} \exp(i\Delta k_{\pm} z),
+    &\eqsubdef{eq:waveeq270b}\cr
+    &\Big({{\partial}\over{\partial z}}
+       +(k'_3\pm a'_3) {{\partial}\over{\partial t}}
+       +{{i}\over{2}}(k''_3\pm b''_3)
+          {{\partial^2}\over{\partial t^2}}\Big) A^{f\mp}_{\omega_3}
+       =i\kappa^{\mp}_3 A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2} \exp(-i\Delta k_{\pm} z),
+    &\eqsubdef{eq:waveeq270c}\cr
+  }
+$$
+where we for the notation of the coupling coefficients\numberedfootnote{Please
+  observe that we here use $\kappa_j$ (``kappa'') for the coupling coefficients,
+  and $k_j$, $k'_j$, $k''_j$, (lower-case ``k'') for the wave vector magnitude
+  and its derivatives.}
+adopted
+$$
+  \kappa^{\pm}_1
+    \equiv {{\omega_1}\over{2cn_1}}\big(p_1 \mp q_1(k_3-k_2)\big),\quad
+  \kappa^{\pm}_2
+    \equiv {{\omega_2}\over{2cn_2}}\big(p_2 \mp q_2(k_3-k_1)\big),\quad
+  \kappa^{\mp}_3
+    \equiv {{\omega_3}\over{2cn_3}}\big(p_3 \pm q_3(k_1+k_2)\big),
+  \eqdef{eq:waveeq280}
+$$
+and for the phase mismatch,
+$$
+  \eqalign{
+  \Delta k_{\pm}&\equiv (\Delta\alpha\pm\Delta\beta)\cr
+    &={{\omega_3 n_3}\over{c}}
+        -{{\omega_2 n_2}\over{c}}
+        -{{\omega_1 n_1}\over{c}}
+      \pm\Big(
+        {{\omega^2_1\gamma_1}\over{2c^2}}
+          +{{\omega^2_2\gamma_2}\over{2c^2}}
+          +{{\omega^2_3\gamma_3}\over{2c^2}}
+      \Big).
+  }
+  \eqdef{eq:waveeq290}
+$$
+We here notice that in Eqs.~\eqref{eq:waveeq270}, the group velocities $v_i$,
+$v_s$ and $v_p$ of the propagating pulses for the idler~$\omega_1$,
+signal~$\omega_2$ and pump~$\omega_3$ are simply given as the reciprocals
+of the respective coefficients $k'^{\pm}_j$, which from the definitions
+in Eqs.~\eqref{eq:dipolwavevec10}, \eqref{eq:gyrcoeff10},
+and~\eqref{eq:poldensp50} are explicitly obtained as
+$$
+  \eqalignno{
+    v^{-1}_{i\pm}&=k'_1\mp a'_1
+      =\bigg({{d k(\omega)}\over{d\omega}}
+       \mp{{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg)\bigg|_{\omega_1},
+    \eqdefn{eq:waveeq300}&\eqsubdef{eq:waveeq300a}\cr
+    v^{-1}_{s\pm}&=k'_2\mp a'_2
+      =\bigg({{d k(\omega)}\over{d\omega}}
+       \mp{{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg)\bigg|_{\omega_2},
+    &\eqsubdef{eq:waveeq300b}\cr
+    v^{-1}_{p\pm}&=k'_3\mp a'_3
+      =\bigg({{d k(\omega)}\over{d\omega}}
+       \mp{{d\big(k(\omega)g(\omega)\big)}\over{d\omega}}\bigg)\bigg|_{\omega_3}.
+    &\eqsubdef{eq:waveeq300c}\cr
+  }
+$$
+In order to reduce the coupled system described by Eqs.~\eqref{eq:waveeq270},
+we first of all transform it into a frame moving along with the group velocity
+$v_3$ of the pump and normalize by the characteristic time of duration $\tau$
+of the pulse, by substituting the spatial coordinate $z$ and time $t$ for the
+normalized and dimensionless quantities\numberedfootnote{We here follow the
+  coordinate transformation as presented in Y.~R.~Shen, {\it The Principles
+  of Nonlinear Optics} (Wiley, 1984), ISBN 0-471-88998-9, page 518.}
+$$
+  \zeta = |k''_3|z/\tau^2,\qquad
+  s=(t-k'_3 z)/\tau.
+  \eqdef{eq:waveeq310}
+$$
+In this reference frame, keeping in mind that $k'_3=1/v_3$ is the inverse of
+the group velocity of the pump, $s$ has the role of a {\it retarded time} with
+reference to the motion of the pump pulse.
+
+In terms of the moving reference system $(\zeta,s)$, the spatial and temporal
+derivatives are expressed as
+$$
+  \eqalignno{
+    {{\partial}\over{\partial z}}
+      &=\underbrace{{{\partial\zeta}\over{\partial z}}}_{|k''_3|/\tau^2}
+         {{\partial}\over{\partial\zeta}}
+        +\underbrace{{{\partial s}\over{\partial z}}}_{-k'_3/\tau}
+           {{\partial}\over{\partial s}}
+      ={{|k''_3|}\over{\tau^2}}{{\partial}\over{\partial\zeta}}
+        -{{k'_3}\over{\tau}}{{\partial}\over{\partial s}},
+    \eqdefn{eq:waveeq320}&\eqsubdef{eq:waveeq320a}\cr
+    {{\partial}\over{\partial t}}
+      &=\underbrace{{{\partial\zeta}\over{\partial t}}}_{0}
+         {{\partial}\over{\partial s}}
+        +\underbrace{{{\partial s}\over{\partial t}}}_{1/\tau}
+           {{\partial}\over{\partial s}}
+      ={{1}\over{\tau}}{{\partial}\over{\partial s}}
+       \quad\Rightarrow\quad{{\partial^2}\over{\partial t^2}}
+                ={{1}\over{\tau^2}}{{\partial^2}\over{\partial s^2}},
+    &\eqsubdef{eq:waveeq320b}\cr
+  }
+$$
+%$$
+%  {{\partial}\over{\partial z}}
+%    =\underbrace{{{\partial\zeta}\over{\partial z}}}_{1}
+%       {{\partial}\over{\partial\zeta}}
+%      +\underbrace{{{\partial t}\over{\partial z}}}_{-v^{-1}_p}
+%         {{\partial}\over{\partial t}}
+%    ={{\partial}\over{\partial\zeta}}
+%      -{{1}\over{v_p}}{{\partial}\over{\partial t}},
+%$$
+and the operators of the system described by Eqs.~\eqref{eq:waveeq270} are
+hence transformed into
+$$
+  \eqalignno{
+    &{{\partial}\over{\partial z}}
+         +(k'_1\mp a'_1){{\partial}\over{\partial t}}
+         +i{{(k''_1\mp b''_1)}\over{2}}{{\partial^2}\over{\partial t^2}}
+    =\underbrace{
+       {{|k''_3|}\over{\tau^2}}{{\partial}\over{\partial\zeta}}
+        -{{k'_3}\over{\tau}}{{\partial}\over{\partial s}}
+        }_{{{\partial}\over{\partial z}}}
+     +(k'_1\mp a'_1)
+     \underbrace{
+           {{1}\over{\tau}}{{\partial}\over{\partial s}}
+     }_{{{\partial}\over{\partial t}}}
+     +i{{(k''_1\mp b''_1)}\over{2}}
+     \underbrace{
+           {{1}\over{\tau^2}}{{\partial^2}\over{\partial s^2}}
+     }_{{{\partial^2}\over{\partial t^2}}},\qquad
+  \eqdefn{eq:waveeq330}&\eqsubdef{eq:waveeq330a}\cr
+    &{{\partial}\over{\partial z}}
+         +(k'_2\mp a'_2){{\partial}\over{\partial t}}
+         +i{{(k''_2\mp b''_2)}\over{2}}{{\partial^2}\over{\partial t^2}}
+    =\underbrace{
+       {{|k''_3|}\over{\tau^2}}{{\partial}\over{\partial\zeta}}
+        -{{k'_3}\over{\tau}}{{\partial}\over{\partial s}}
+        }_{{{\partial}\over{\partial z}}}
+     +(k'_2\mp a'_2)
+     \underbrace{
+           {{1}\over{\tau}}{{\partial}\over{\partial s}}
+     }_{{{\partial}\over{\partial t}}}
+     +i{{(k''_2\mp b''_2)}\over{2}}
+     \underbrace{
+           {{1}\over{\tau^2}}{{\partial^2}\over{\partial s^2}}
+     }_{{{\partial^2}\over{\partial t^2}}},\qquad
+  &\eqsubdef{eq:waveeq330b}\cr
+    &{{\partial}\over{\partial z}}
+         +(k'_3\pm a'_3){{\partial}\over{\partial t}}
+         +i{{(k''_3\pm b''_3)}\over{2}}{{\partial^2}\over{\partial t^2}}
+    =\underbrace{
+       {{|k''_3|}\over{\tau^2}}{{\partial}\over{\partial\zeta}}
+        -{{k'_3}\over{\tau}}{{\partial}\over{\partial s}}
+        }_{{{\partial}\over{\partial z}}}
+     +(k'_3\pm a'_3)
+     \underbrace{
+           {{1}\over{\tau}}{{\partial}\over{\partial s}}
+     }_{{{\partial}\over{\partial t}}}
+     +i{{(k''_3\pm b''_3)}\over{2}}
+     \underbrace{
+           {{1}\over{\tau^2}}{{\partial^2}\over{\partial s^2}}
+     }_{{{\partial^2}\over{\partial t^2}}},\qquad
+  &\eqsubdef{eq:waveeq330c}\cr
+  }
+$$
+that is to say, by collecting the normalized and dimensional temporal ($s$) and
+spatial $(\zeta)$ derivatives, we reduce Eqs.~\eqref{eq:waveeq270} into their
+dimensionless form\numberedfootnote{The transformation into a
+  moving reference my means of a different time might feel like an odd
+  and arbitrary choice. In principle, we could just as well apply a
+  transformation where we make use of a moving spatial coordinate
+  $$
+    \zeta=z+v_p t.
+  $$
+  In this case, the spatial derivative will transform according to
+  $$
+    {{\partial}\over{\partial z}}
+      =\underbrace{{{\partial\zeta}\over{\partial z}}}_{1}
+         {{\partial}\over{\partial\zeta}}
+        +\underbrace{{{\partial t}\over{\partial z}}}_{-v^{-1}_p}
+           {{\partial}\over{\partial t}}
+      ={{\partial}\over{\partial\zeta}}
+        -{{1}\over{v_p}}{{\partial}\over{\partial t}},
+  $$
+  which would leave the left-hand side of the system exactly in the same
+  form as in Eqs.~\eqref{eq:waveeq330}; however, in this case we would have
+  the time entering the phase matching exponent in the right-hand side,
+  something which clearly would mess upp things somewhat. Therefore, we
+  stick to the transformation of time rather than spatial coordinate.}
+$$
+  \eqalignno{
+     {{|k''_3|}\over{\tau^2}}\Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_1\mp b''_1)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\pm}_{\omega_1}
+       &=i\kappa^{\pm}_1 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+          \exp\Big(i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big),\qquad
+     \eqdefn{eq:waveeq330}&\eqsubdef{eq:waveeq330a}\cr
+     {{|k''_3|}\over{\tau^2}}\Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_2\mp b''_2)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\pm}_{\omega_2}
+       &=i\kappa^{\pm}_2 A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+          \exp\Big(i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big),\qquad
+     &\eqsubdef{eq:waveeq330b}\cr
+     {{|k''_3|}\over{\tau^2}}\Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_3\pm b''_3)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\mp}_{\omega_3}
+       &=i\kappa^{\mp}_3 A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+          \exp\Big(-i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big).\qquad
+     &\eqsubdef{eq:waveeq330c}\cr
+  }
+$$
+The shape of the system decribed by Eqs.~\eqref{eq:waveeq330} can now be used
+to normalize also the field envelopes (which we recall still have the physical
+dimension of volts per meter).
+Dividing both sides by the common leading coefficient $|k''_3|/\tau^2$ of the
+left-hand sides, we obtain
+$$
+  \eqalignno{
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_1\mp b''_1)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\pm}_{\omega_1}
+       &=i{{\kappa^{\pm}_1 \tau^2}\over{|k''_3|}}
+          A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_2}
+          \exp\Big(i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big),\qquad
+     \eqdefn{eq:waveeq332}&\eqsubdef{eq:waveeq332a}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_2\mp b''_2)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\pm}_{\omega_2}
+       &=i{{\kappa^{\pm}_2 \tau^2}\over{|k''_3|}}
+          A^{f\mp}_{\omega_3} A^{f\pm*}_{\omega_1}
+          \exp\Big(i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big),\qquad
+     &\eqsubdef{eq:waveeq332b}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_3\pm b''_3)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) A^{f\mp}_{\omega_3}
+       &=i{{\kappa^{\mp}_3 \tau^2}\over{|k''_3|}}
+          A^{f\pm}_{\omega_1} A^{f\pm}_{\omega_2}
+          \exp\Big(-i{{\Delta k_{\pm} \tau^2}\over{|k''_3|}}\zeta\Big).\qquad
+     &\eqsubdef{eq:waveeq332c}\cr
+  }
+$$
+Assuming positive and real-valued coupling coefficients $\kappa^{\pm}_k$, we
+define the normalized and dimensionless field envelopes $a^{f\pm}_{\omega_j}$
+for the idler, signal and pump as
+$$
+  A^{f\pm}_{\omega_1}\equiv
+    \Big({{\kappa^{\pm}_1 \tau^2}\over{|k''_3|}}\Big)^{1/2} a^{f\pm}_{\omega_1},\qquad
+  A^{f\pm}_{\omega_2}\equiv
+    \Big({{\kappa^{\pm}_2 \tau^2}\over{|k''_3|}}\Big)^{1/2} a^{f\pm}_{\omega_2},\qquad
+  A^{f\mp}_{\omega_3}\equiv
+    \Big({{\kappa^{\mp}_3 \tau^2}\over{|k''_3|}}\Big)^{1/2} a^{f\mp}_{\omega_3},
+  \eqdef{eq:waveeq340}
+$$
+and further define the normalized phase mismatch related to the dimensionless
+and normalized spatial coordinate $\zeta$ as
+$$
+  \eqalign{
+    \Delta\phi_{\pm}&\equiv\Delta k_{\pm} \tau^2/|k''_3|\cr
+    &={{\tau^2}\over{|k''_3|}}
+      \bigg(
+        {{\omega_3 n_3}\over{c}}
+          -{{\omega_2 n_2}\over{c}}
+          -{{\omega_1 n_1}\over{c}}
+        \pm
+        \Big(
+          {{\omega^2_1\gamma_1}\over{2c^2}}
+            +{{\omega^2_2\gamma_2}\over{2c^2}}
+            +{{\omega^2_3\gamma_3}\over{2c^2}}
+        \Big)
+      \bigg).
+  }
+  \eqdef{eq:waveeq350}
+$$
+With these definitions, the normalized and dimensionless form of the system of
+coupled wave equations~\eqref{eq:waveeq332} takes the form
+$$
+  \eqalignno{
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_1\mp b''_1)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) a^{f\pm}_{\omega_1}
+       &=i\kappa_{\pm} a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2}
+          \exp(i\Delta\phi_{\pm}\zeta),
+     \eqdefn{eq:waveeq360}&\eqsubdef{eq:waveeq360a}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_2\mp b''_2)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) a^{f\pm}_{\omega_2}
+       &=i\kappa_{\pm} a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta),
+     &\eqsubdef{eq:waveeq360b}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_3\pm b''_3)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) a^{f\mp}_{\omega_3}
+       &=i\kappa_{\pm} a^{f\pm}_{\omega_1} a^{f\pm}_{\omega_2}
+          \exp(-i\Delta\phi_{\pm}\zeta),
+     &\eqsubdef{eq:waveeq360c}\cr
+  }
+$$
+where the common coupling coefficient is defined in terms of the coupling
+coefficients of Eqs.~\eqref{eq:waveeq280} as
+$$
+  \kappa_{\pm}\equiv
+     \Big({{\kappa^{\pm}_1\kappa^{\pm}_2\kappa^{\mp}_3 \tau^6}
+       \over{|k''_3|^3}}\Big)^{1/2}.
+  \eqdef{eq:waveeq370}
+$$
+\vfill\eject
+
+\section{Manley--Rowe relations for the pulsed co-directional system}
+In Eqs.~\eqref{eq:waveeq360}, we may directly identify that the right-hand side
+has the same form as for the case of analysis of a continuous-wave system for
+the three-wave mixing. This is of course a natural consequence of that we in
+the nonlinear interaction consider all interaction between light and matter to
+be instantaneous, without any delay or spectral broadening due to the nonlinear
+components of the medium. All such broadening of dispersion is instead handled
+in the left-hand side, where the linear properties of the medium such as phase
+velocity, group velocity and group velocity dispersion is described in a linear
+part of the optical model. In this respect, we see that we may employ a similar
+method as in the continuous-wave case when analysing the energy balance between
+the idler, signal and pump, commonly denoted as the {\it Manley-Rowe
+relations}.\numberedfootnote{J. M. Manley and H. E. Rowe, {\it Some General
+  Properties of Nonlinear Elements -- Part I: General Energy Relations},
+  Proceedings of the IRE, July 1956, p. 904 -- 913;
+  P.~N.~Butcher and D.~Cotter, {\it The Elements of Nonlinear Optics}
+  (Cambridge University Press, 1991), ISBN 0-521-34183-3.}
+The extraction of the energy balance between these modes goes as follows.
+
+\subsection{Manley--Rowe relations in the absence of group velocity dispersion}
+At a first model, we skip the second derivatives in normalized time, hence
+dropping the group velocity dispersion from the problem. For this first case,
+by multiplying the left- and righ-hand sides of Eqs.~\eqref{eq:waveeq360} by
+the respective complex conjugates of the field envelopes and adding the
+resulting complex conjugates of the left- and right-hand expressiond, we
+obtain\numberedfootnote{Taking into account that
+  $${{\partial}\over{\partial s}}|f(\zeta,s)|^2 =
+       {{\partial f(\zeta,s)}\over{\partial s}} f^*(\zeta,s)
+        +{{\partial f^*(\zeta,s)}\over{\partial s}} f(\zeta,s),\quad\hbox{etc.}
+  $$
+  and that $\Re[if]=-\Im[f]$.}
+$$
+  \eqalignno{
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) |a^{f\pm}_{\omega_1}|^2
+       &=-2\kappa_{\pm}\Im\big[a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big],
+     \eqdefn{eq:manrow10}&\eqsubdef{eq:manrow10a}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) |a^{f\pm}_{\omega_2}|^2
+       &=-2\kappa_{\pm}\Im\big[a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big],
+     &\eqsubdef{eq:manrow10b}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) |a^{f\mp}_{\omega_3}|^2
+       &=-2\kappa_{\pm}\Im\big[a^{f\pm}_{\omega_1} a^{f\pm}_{\omega_2} a^{f\mp*}_{\omega_3}
+          \exp(-i\Delta\phi_{\pm}\zeta)\big],
+     &\cr
+       &=2\kappa_{\pm}\Im\big[ a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big].
+     &\eqsubdef{eq:manrow10c}\cr
+  }
+$$
+By direct inspection, the idler, signal and pump intensities from the system
+of Eqs.~\eqref{eq:manrow10} hence obey the energy conservation rules, or
+equivalently Manley--Rowe relations,
+\par\boxit{
+$$
+  \eqalign{
+  \Big(
+    {{\partial}\over{\partial\zeta}}
+      +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+  \Big) |a^{f\pm}_{\omega_1}|^2
+ =\Big(
+    {{\partial}\over{\partial\zeta}}
+      +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+  \Big) |a^{f\pm}_{\omega_2}|^2
+ =-\Big(
+    {{\partial}\over{\partial\zeta}}
+      \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+   \Big) |a^{f\mp}_{\omega_3}|^2
+   }
+  \eqdef{eq:manrow20}
+$$
+}\noindent
+which due to the inclusion of the relative group velocities in the coefficients
+of $\partial/\partial s$ are interpreted as the rate of energy transfer between
+the modes during propagation along the $\zeta$-axis, from the presence of
+$\partial/\partial\zeta$ terms, but also as the change in energy transfer rate
+due to any mismatch in group velocity between the pulses, from the presence of
+coefficients to the $\partial/\partial s$ terms.
+
+Notice that the Manley--Rowe relations as per above include any mismatch in
+group velocities between the idler-relative-pump and signal-relative-pump, as
+well as the differential contributions to the group velocities for LCP/RCP via
+the $\mp a'_j$ terms. This is overall a signature of the purely reactive form of
+the medium, creating a virtual flow from a field at one frequency via the medium
+over to the other interacting frequencies in the current three-way mixing.
+
+\subsection{Manley--Rowe relations in the presence of group velocity dispersion}
+As for the Manley--Rowe relations in the absence of group velocity dispersion,
+this was a pretty straightforward and easy derivation. Let us now therefore
+turn our attention to the more general case in which we also include group
+velocity dispersion, that is to say including non-zero coefficients $k''_j$
+and $b''_j$ from Eqs.~\eqref{eq:waveeq360c}.
+In this case, the same multiplication by complex-conjugated field envelopes
+followed by an identical addition of the resulting complex conjugates leads
+to the form
+$$
+  \eqalignno{
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) |a^{f\pm}_{\omega_1}|^2
+       +{{i}\over{2}}&
+        {{(k''_1\mp b''_1)}\over{|k''_3|}}
+     \Big(
+          {{\partial^2 a^{f\pm}_{\omega_1}}\over{\partial s^2}} a^{f\pm*}_{\omega_1}
+          -a^{f\pm}_{\omega_1} {{\partial^2 a^{f\pm*}_{\omega_1}}\over{\partial s^2}}
+     \Big)\cr
+       &=-2\kappa_{\pm}\Im\big[
+            a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big],
+     \eqdefn{eq:manrow30}&\eqsubdef{eq:manrow30a}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) |a^{f\pm}_{\omega_2}|^2
+       +{{i}\over{2}}&
+        {{(k''_2\mp b''_2)}\over{|k''_3|}}
+     \Big(
+          {{\partial^2 a^{f\pm}_{\omega_2}}\over{\partial s^2}} a^{f\pm*}_{\omega_2}
+          -a^{f\pm}_{\omega_2} {{\partial^2 a^{f\pm*}_{\omega_2}}\over{\partial s^2}}
+     \Big)\cr
+       &=-2\kappa_{\pm}\Im\big[
+            a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big],
+     &\eqsubdef{eq:manrow30b}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+     \Big) a^{f\mp}_{\omega_3}
+       +{{i}\over{2}}&
+        {{(k''_3\pm b''_3)}\over{|k''_3|}}
+     \Big(
+       {{\partial^2 a^{f\mp}_{\omega_3}}\over{\partial s^2}} a^{f\mp*}_{\omega_3}
+       -a^{f\mp}_{\omega_3} {{\partial^2 a^{f\mp*}_{\omega_3}}\over{\partial s^2}}
+     \Big)\cr
+       &=2\kappa_{\pm}\Im\big[ a^{f\mp}_{\omega_3} a^{f\pm*}_{\omega_2} a^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta)\big],
+     &\eqsubdef{eq:manrow30c}\cr
+  }
+$$
+which clearly is not as easy to interprete as an energy balance as the system of
+Eqs.~\eqref{eq:manrow10}. Here, the mixed second derivatives $\partial^2/
+\partial s^2$ with an intermediate minus alters the situation compared to the
+one in absence of group velocity dispersion. As they currently stand in
+Eqs.~\eqref{eq:manrow30}, these terms do not allow for a direct interpretation
+in terms of derivatives of the ``intensities'' $|a^{f\pm}_{\omega_j}|^2$, $j=1,2,3$.
+However, as we via the dispersion still have not altered any premises for the
+medium, which still is assumed to be purely reactive in its interaction with
+the light, we may still expect some kind of symmetry or energy conservation
+rule to apply.
+\vskip20pt
+\centerline{[ - - - TO BE CONTINUED - - - ]}
+\vskip20pt
+
+\section{Final normalization of the system for pulsed co-directional
+         optical parametric amplification}
+It should here be emphasized that the form of Eqs.~\eqref{eq:waveeq360} with a
+{\it common} coupling coefficient opens up for a final normalization which
+enables us to get rid of this coupling coefficient altogether, for an even
+cleaner algebraic shape. We can see how this is done by multiplying both sides
+of the equations in the system by the common coupling coefficient $\kappa_{\pm}$,
+followed by defining the normalized field envelopes, which now are scaled be
+the common coupling coefficient, as
+$$
+  \tilde{a}^{f\pm}_{\omega_1}(\zeta,s)=\kappa_{\pm} a^{f\pm}_{\omega_1}(\zeta,s),\qquad
+  \tilde{a}^{f\pm}_{\omega_2}(\zeta,s)=\kappa_{\pm} a^{f\pm}_{\omega_2}(\zeta,s),\qquad
+  \tilde{a}^{f\mp}_{\omega_3}(\zeta,s)=\kappa_{\pm} a^{f\mp}_{\omega_3}(\zeta,s),
+  \eqdef{eq:waveeq370}
+$$
+leading to Eqs.~\eqref{eq:waveeq360} taking the final normalized and
+dimensionless form\numberedfootnote{Notice that the linear part of the
+  normalized form for the pump exactly follows the resulting Eq.~(26.20)
+  in Y.~R.~Shen, {\it The Principles of Nonlinear Optics} (Wiley, 1984),
+  ISBN 0-471-88998-9, page 518:
+  $$
+    -i{{\partial a}\over{\partial\xi}} = {{1}\over{2}}
+      \Big({{\partial v_g}\over{\partial\omega}}\Big/
+          \Big|{{\partial v_g}\over{\partial\omega}}\Big|\Big)
+      {{\partial^2 a}\over{\partial s^2}} + |a|^2 a.
+  $$
+  The only difference is that here, we are
+  concerned with a system of equations for OPA, while in Shen, the single
+  equation concerns propagation in an optical Kerr medium, hence the
+  ``$|a|^2 a$'' source term in the right-hand side. Still, the approach
+  of normalization follows analogously.}
+\par\boxit{
+$$
+  \eqalignno{
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_1\mp b''_1)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) \tilde{a}^{f\pm}_{\omega_1}
+       &=i\tilde{a}^{f\mp}_{\omega_3} \tilde{a}^{f\pm*}_{\omega_2}
+          \exp(i\Delta\phi_{\pm}\zeta),
+     \eqdefn{eq:waveeq370}&\eqsubdef{eq:waveeq370a}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       +{{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_2\mp b''_2)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) \tilde{a}^{f\pm}_{\omega_2}
+       &=i\tilde{a}^{f\mp}_{\omega_3} \tilde{a}^{f\pm*}_{\omega_1}
+          \exp(i\Delta\phi_{\pm}\zeta),
+     &\eqsubdef{eq:waveeq370b}\cr
+     \Big(
+       {{\partial}\over{\partial\zeta}}
+       \pm{{a'_3\tau}\over{|k''_3|}}{{\partial}\over{\partial s}}
+       +{{i}\over{2}}
+        {{(k''_3\pm b''_3)}\over{|k''_3|}}{{\partial^2}\over{\partial s^2}}
+     \Big) \tilde{a}^{f\mp}_{\omega_3}
+       &=i\tilde{a}^{f\pm}_{\omega_1} \tilde{a}^{f\pm}_{\omega_2}
+          \exp(-i\Delta\phi_{\pm}\zeta),
+     &\eqsubdef{eq:waveeq370c}\cr
+  }
+$$
+}\noindent
+where, to recapitulate the normalization of spatial and temporal coordinates
+from Eq.~\eqref{eq:waveeq310}, $\zeta$ is the normalized and dimensionless
+spatial coordinate following the system along with the group velocity
+$v_p=1/k'_3$ of the pump and scaled against the characteristic pulse width
+$\tau/v_p$ and magnitude of the group velocity dispersion $|k''_3|$ of the
+pump, while $s$ is the corresponding normalized and dimensionless time, also
+scaled against the characteristic pulse duration $\tau$ of the pump.
+
+\subsection{The dispersion parameters}
+From Eq.~\eqref{eq:waveeq300}, and the definition of the coefficients $k'_k$
+and $k''_k$,
+$$
+  k'_k \equiv k'(\omega_k)
+       \equiv {{d}\over{d\omega}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_k},\qquad
+  k''_k \equiv k''(\omega_k)
+        \equiv {{d^2}\over{d\omega^2}}
+               \bigg({{\omega n(\omega)}\over{c}}\bigg)\bigg|_{\omega_k},
+$$
+for $k=1,2,3$ for the idler, signal and pump, respectively, we from the wave
+equation~\eqref{eq:waveeq360} have that the coefficient
+$(k'_1-k'_3)\tau/|k''_3|$ can be interpreted as the difference in reciprocal
+group velocities between the idler ($v_i=1/k'_1$) and pump ($v_p=1/k'_3$)
+pulses, normalized against the group velocity dispersion $|k''_3|$ of the pump,
+$$
+  {{(k'_1-k'_3)\tau}\over{|k''_3|}}=
+  {{\tau}\over{|k''_3|}}\Big({{1}\over{v_i}}-{{1}\over{v_p}}\Big).
+$$
+Notice that the sign of the group-velocity dispersion $k''_k$ can be either
+positive or negative. In the case of positive group-velocity dispersion,
+$d^2k/d\omega^2>0$, a long-wavelength, or equivalently low-frequency, pulse
+travels faster than a short-wavelength, or high-frequency, pulse.
+
+\subsection{Resemblance to the nonlinear Schr\"odinger equation}
+The system~\eqref{eq:waveeq360}, in particular the final equation for the
+pump wave, slightly rearranged as
+$$
+  i{{\partial\tilde{a}^{f\mp}_{\omega_3}}\over{\partial\zeta}}
+    ={{1}\over{2}}{{k''_3}\over{|k''_3|}}
+     {{\partial^2\tilde{a}^{f\mp}_{\omega_3}}\over{\partial s^2}}
+    -\tilde{a}^{f\pm}_{\omega_1} \tilde{a}^{f\pm}_{\omega_2}
+       \exp(-i\Delta\phi_{\pm}\zeta),
+$$
+clearly resembles the one-dimensional nonlinear Schr\"odinger equation of the
+classic form
+$$
+  i\hbar{{\partial\psi(z,t)}\over{\partial t}}
+    =\Big[-{{\hbar^2}\over{2m}}{{\partial^2}\over{\partial z^2}}
+       +V(z,t)\Big]\psi(z,t)
+$$
+for the wave function $\psi(z,t)$; however, notice that in the system of PDEs
+for the OPA process in Eqs.~\eqref{eq:waveeq360}, the single first-derivative
+in the left-hand side is for the normalized {\it spatial coordinate} $\zeta$
+(rather than for the time $t$ in the Schr\"odinger equation), while the higher
+derivatives are for $s$, being the normalized ${\it time}$ (rather than for
+the spatial coordinate $z$ in the Schr\"odinger equation).
+
+In this respect, we may say that we have switched order of the variables
+between dispersion and spatial interaction; also notice that in this analogy,
+swapping space and time, our present potential would correspond to a potential
+which only varies in {\it time}, while it for the OPA process, as evident from
+Eqs.~\eqref{eq:waveeq360}, instead only has a spatial dependence in terms of
+the nonlinear interaction and the phase mismatch factors
+$\exp(i\Delta\phi_{\pm}\zeta)$ and $\exp(-i\Delta\phi_{\pm}\zeta)$.
+
+\section{Numerical simulation of the pulsed chiral OPA process}
+We will now proceed with solving the normalized system of nonlinear partial
+differential equations~\eqref{eq:waveeq360} by means of the {\it Split-Step
+Fourier method},\numberedfootnote{See, for example, Govind P.~Agrawal,
+  {\it Nonlinear Fiber Optics} (Academic Press, 1995), ISBN 0-12-045142-5,
+  Section 2.4.1 - {\it Split-Step Fourier Method}, pages 50--54.}%
+\numberedfootnote{Ralf Deiterding, Roland Glowinski, Hilde Oliver
+  and Stephen Poole, {\it A Reliable Split-Step Fourier Method for
+  the Propagation Equation of Ultra-Fast Pulses in Single-Mode Optical
+  Fibers}, J. Lightwave Technology {\bf 31}, 2008--2017 (2013).}
+
+\subsection{Formulation of the system of PDEs by operator formalism}
+In order to solve the normalized system of nonlinear partial differential
+equations described by the system~\eqref{eq:waveeq360} by means of the
+{\it Split-Step Fourier method}, we rewrite the system as
+$$
+  {{\partial{\bf a}(\zeta,s)}\over{\partial\zeta}}
+    = (\hat{\fam\bbb D}+\hat{\fam\bbb N}){\bf a}(\zeta,s),
+  \eqdef{eq:numsol10}
+$$
+where the $3\times1$ column vector ${\bf a}(\zeta,s)$ is defined as
+$$
+  {\bf a}(\zeta,s)\equiv
+  \pmatrix{
+    \tilde{a}^{f\pm}_{\omega_1}(\zeta,s)\cr
+    \tilde{a}^{f\pm}_{\omega_2}(\zeta,s)\cr 
+    \tilde{a}^{f\mp}_{\omega_3}(\zeta,s)\cr 
+  }
+  \eqdef{eq:numsol20}
+$$
+and where the operators $\hat{\fam\bbb D}$ and $\hat{\fam\bbb N}$ are
+defined to handle the dispersion and nonlinear interactions, respectively.
+Here, the arguments $(\zeta,s)$ act as the normalized version of the regular
+spatial coordinate and time $(z,s)$ via Eqs.~\eqref{eq:waveeq310}, with the
+principal difference that the normlized ``time'' $s$ is expressed in a retarded
+time frame, effectively following the mean group velocity of the pump pulse.
+
+Starting with the diagonal operator $\hat{\fam\bbb D}$ for the dispersion,
+this is from Eqs.~\eqref{eq:waveeq370} defined in terms of the normalized
+time derivatives $\partial/\partial s$ and $\partial^2/\partial s^2$ as
+$$
+  \hat{\fam\bbb D}\equiv
+  -\pmatrix{
+    \displaystyle
+     D'^{\pm}_{11}{{\partial}\over{\partial s}}
+       +D''^{\pm}_{11}{{\partial^2}\over{\partial s^2}}
+      & 0 & 0 \cr
+    0 &
+    \displaystyle
+     D'^{\pm}_{22}{{\partial}\over{\partial s}}
+       +D''^{\pm}_{22}{{\partial^2}\over{\partial s^2}}
+      & 0 \cr
+    0 & 0 & 
+    \displaystyle
+     D'^{\pm}_{33}{{\partial}\over{\partial s}}
+       +D''^{\pm}_{33}{{\partial^2}\over{\partial s^2}}\cr
+  },
+  \eqdef{eq:numsol30}
+$$
+where the coefficients of the first and second derivatives $\partial/\partial s$
+and $\partial^2/\partial s^2$ in the normalized ``time'' $s$ along the diagonal
+elements are
+$$
+  \eqalignno{
+    D'^{\pm}_{11}&={{(k'_1\mp a'_1-k'_3)\tau}\over{|k''_3|}},\qquad
+    D''^{\pm}_{11}=i{{(k''_1\mp b''_1)}\over{2|k''_3|}},
+    \eqdefn{eq:numsol32}&\eqsubdef{eq:numsol32a}\cr
+    D'^{\pm}_{22}&={{(k'_2\mp a'_2-k'_3)\tau}\over{|k''_3|}},\qquad
+    D''^{\pm}_{22}=i{{(k''_2\mp b''_2)}\over{2|k''_3|}},
+    &\eqsubdef{eq:numsol32b}\cr
+    D'^{\pm}_{33}&=\pm{{a'_3\tau}\over{|k''_3|}},\hskip64pt
+    D''^{\pm}_{33}=i{{(k''_3\pm b''_3)}\over{2|k''_3|}},
+    &\eqsubdef{eq:numsol32c}\cr
+  }
+$$
+where we may recall that the simplified form of the third element, for the
+pump, stems from the fact that we chose the group velocity of the pump as
+reference in the normalized time $s$ from Eq.~\eqref{eq:waveeq310}.
+Notice that the linear $\hat{\fam\bbb D}$ operator only involves the
+normalized {\it time}; in just a moment, we will make use of that the time
+derivatives which occur in $\hat{\fam\bbb D}$ can be expressed as a
+polynomial in the angular frequency in Fourier domain.
+It should here be stressed that the $\hat{\fam\bbb D}$ operator has no
+explicit spatial dependence, and of course (due to its linearity) no
+dependence of the involved fields as such.
+
+Meanwhile, the nonlinear operator $\hat{\fam\bbb N}$ is from
+Eqs.~\eqref{eq:waveeq370} defined as
+$$
+  \hat{\fam\bbb N}\equiv
+  \pmatrix{
+    \displaystyle
+      0 & 0 & i  \tilde{a}^{f\pm*}_{\omega_2}\exp(i\Delta\phi_{\pm}\zeta)\cr
+    \displaystyle
+      0 & 0 & i\tilde{a}^{f\pm*}_{\omega_1}\exp(i\Delta\phi_{\pm}\zeta)\cr
+    \displaystyle
+      i\tilde{a}^{f\pm}_{\omega_2}\exp(-i\Delta\phi_{\pm}\zeta) & 0 & 0 \cr
+  },
+  \eqdef{eq:numsol40}
+$$
+where we for the sake of simplifying the notation omitted the explicit
+arguments of the normalized fields
+$\tilde{a}^{f\pm}_{\omega_k}=\tilde{a}^{f\pm}_{\omega_k}(\zeta,s)$.
+The operator $\hat{\fam\bbb N}$ handles the nonlinear mixing between the
+fields, as well as the explicit spatial dependence on the phase mismatch
+via the factors $\exp(i\Delta\phi_{\pm}\zeta)$ (for the idler and signal
+fields) and $\exp(-i\Delta\phi_{\pm}\zeta)$ (for the pump field).
+
+Notice that due to the mixed-term nature of the OPA process, the definition of
+$\hat{\fam\bbb N}$ is not unique; for example, we could equally well have
+defined the last row as instead having
+$i\tilde{a}^{f\pm}_{\omega_1}\exp(-i\Delta\phi_{\pm}\zeta)$ in the second column,
+operating on the signal field $\tilde{a}^{f\pm}_{\omega_2}$, that is to say instead
+using
+$$
+  \hat{\fam\bbb N}\equiv
+  \pmatrix{
+    \displaystyle
+      0 & 0 & i  \tilde{a}^{f\pm*}_{\omega_2}\exp(i\Delta\phi_{\pm}\zeta)\cr
+    \displaystyle
+      0 & 0 & i\tilde{a}^{f\pm*}_{\omega_1}\exp(i\Delta\phi_{\pm}\zeta)\cr
+      0 &
+    \displaystyle
+      i\tilde{a}^{f\pm}_{\omega_1}\exp(-i\Delta\phi_{\pm}\zeta) & 0 \cr
+  }.
+$$
+This alternative would when multiplied by the field vector ${\bf a}$ of
+Eq.~\eqref{eq:numsol20} produce {\it exactly the same mixing term} involving
+the product $\tilde{a}^{f\pm}_{\omega_1}\tilde{a}^{f\pm}_{\omega_2}$ acting as a
+source in the equation for the pump. However, just for the sake of sticking
+to one definition, we in the present analysis choose $\hat{\fam\bbb N}$ as
+given by Eq.~\eqref{eq:numsol40}.
+
+\subsection{A scalar analogy to the operator formulation in spatial domain}
+As a preable to the Split-Step Fourier Method, the form of
+Eqs.~\eqref{eq:numsol10} suggests that we could start off with a pedagogic
+check of the scalar behaviour. Thus, assume that $D$ and $N$ are (possibly
+complex-valued) constants and that $a(z)$ is a scalar function obeying the
+equation with the close-to-trivial solution
+$$
+  {{da(z)}\over{dz}}=(D+N)a(z)
+  \qquad\Leftrightarrow\qquad
+  a(z)=C\exp\big((D+N)z\big),
+  \eqdef{eq:analogy10}
+$$
+where $C$ is a constant of integration. In other words, having obtained
+a solution at any spatial coordinate $z$, the solution of
+Eq.~\eqref{eq:analogy10} at $z+\Delta z$ is then given as
+$$
+  \eqalign{
+    a(z+\Delta z)&=C\exp\big((D+N)(z+\Delta z)\big)\cr
+      &=\underbrace{C\exp\big((D+N)z\big)}_{\displaystyle a(z)}
+        \exp\big((D+N)\Delta z\big)\cr
+      &=\exp(D\Delta z)\exp(N\Delta z)a(z).\cr
+  }
+  \eqdef{eq:analogy20}
+$$
+Thus, the evolution of the solution given by Eq.~\eqref{eq:analogy20} from
+$z$ to $z+\Delta z$ can be described by a simple multiplication by
+$\exp\big(D\Delta z\big)\exp\big(N\Delta z\big)$, and it is the purpose of
+the Split-Step Fourier Method to perform such small steps of simulation,
+though considering that $\hat{\fam\bbb D}$ and $\hat{\fam\bbb N}$ in
+Eq.~\eqref{eq:numsol10} are matrix operators, and that $\hat{\fam\bbb N}$
+in particular also has an explicit spatial and nonlinear dependence.
+
+\subsection{A scalar analogy to the operator formulation in spectral domain}
+Let us now analyze a variant of Eq.~\eqref{eq:analogy10} in which the envelope
+$a=a(z,t)$ is dependent on the spatial coordinate $z$ and time $t$, and in
+which the operator managing the dispersion is a polynomial of time derivatives,
+$$
+  {{\partial a(z,t)}\over{\partial z}}
+    =\Big[D\Big({{\partial}\over{\partial t}}\Big)+N\Big]a(z,t),
+  \eqdef{eq:analogy30}
+$$
+where $D$ is the polynomial
+$$
+  D(X) = \sum^{\infty}_{k=0}\beta_k X^2.
+  \eqdef{eq:analogy40}
+$$
+If we as a first step, just as in the previous section, assume that we may treat
+the right-hand side as constant for a sufficiently small step $\Delta z$, we
+could then, again in analogy to Eq.~\eqref{eq:analogy20} in the previous
+section, express the solution in terms of the (perhaps somewhat na\"ive)
+propagator
+$$
+  a(z+\Delta z,t)=C\exp\big((D+N)(z+\Delta z)\big)
+     =\exp\Big[\Delta z D\Big({{\partial}\over{\partial t}}\Big)\Big]
+      \exp(N\Delta z)a(z,t).
+  \eqdef{eq:analogy50}
+$$
+The question is then how we should evaluate the exponential involving the time
+derivatives. Clearly, from a numerical perspective we should avoid splitting
+the envelopes in small time steps and assume that we may go ahead straight away
+with just computing differences and divide by the time steps. Such an approach
+is extremely sensitive to noise and numerical cancellation, and will lead
+straight to numerical inconsistencies and instabilities.
+
+Another approach would be to observe that the exponential of a polynomial in
+derivatives in time, operating on an arbitrary time-dependent function $f(t)$,
+may be handled in angular frequency domain (Fourier domain) as
+$$
+  \eqalign{
+    \exp\Big[\Delta z D\Big({{\partial}\over{\partial t}}\Big)\Big]f(t)
+      &=\fourier^{-1}\Big\{
+          \fourier\Big[
+            \exp\Big[\Delta z D\Big({{\partial}\over{\partial t}}\Big)\Big]f(t)
+          \Big]
+        \Big\}\cr
+      &=\fourier^{-1}\Big\{
+          \exp[\Delta z D(-i\omega)]\fourier[f(t)]
+        \Big\}\cr
+      &=\fourier^{-1}\Big\{
+          \exp[\Delta z D(-i\omega)]f(\omega)
+        \Big\}.\cr
+  }
+  \eqdef{eq:analogy60}
+$$
+Thus, we may from the ``half-solution'' expressed by Eq.~\eqref{eq:analogy50}
+conclude that we may proceed in a split-step fashion as
+$$
+  a(z+\Delta z,t)
+    =\underbrace{\fourier^{-1}\Big\{\exp[\Delta z D(-i\omega)]
+        \fourier[\underbrace{\exp(N\Delta z)a(z,t)}_{\hbox{Step 1}}]
+     \Big\}}_{\hbox{Step 2}},
+  \eqdef{eq:analogy70}
+$$
+that is to say, in the first step applying the operator $N$ under the assumption
+of this being constant (in the case of a nonlinear $N$ implying that the
+nonlinear contribution is treated as piece-wise constant over the small step
+$\Delta z$), followed by the second step in which we apply the time-dependent
+dispersive operator $D$ and interpret the involved time derivatives in Fourier
+domain.
+
+In fact, these two steps form the very basis of the {\it Split-Step Fourier
+Method} as will now be formalised.
+
+\subsection{Formulation of step-wise propagation by means of the Split-Step
+            Fourier Method}
+Having formulated the system of coupled and nonlinear PDEs in terms of the
+operator formalism described by Eqs.~\eqref{eq:numsol10}--\eqref{eq:numsol40},
+we will now proceed with formulating the method of solution by means of the
+Split-Step Fourier Method. As a starter, we will describe the original
+formulation of the Split-Step Fourier Method, however directly afterwards we
+will describe a more refined version with an only marginally more complex
+algorithm.
+
+{\bf [Step 0 -- Initialization]} Before entering the first step in the
+Split-Step Fourier Method, we initialize the involved field envelopes
+contained by the vector ${\bf a}={\bf a}(\zeta,s)$ at $\zeta=0$ as vectors
+in $N$ samples of discretized normalized time $s_k$, $k=0,1,\ldots,N-1$.
+As for the notation of a system of $M$ fields contained by the ${\bf a}$
+column vector, we use each row to denote the $m$:th field envelope,
+$$
+  {\bf a}(\zeta,s)
+    =\pmatrix{
+       a_0(\zeta,s)\cr
+       a_1(\zeta,s)\cr
+       \vdots\cr
+       a_{M-1}(\zeta,s)\cr
+    },
+  \eqdef{eq:numsol0-10}
+$$
+that is to say, ${\bf a}\in{\fam\bbb R}^{[M\times1]}$. However, when discretizing
+this along the normalized time axis, we from a practical point allocate the
+field vector at normalized and dimensionless spatial coordinate $\zeta$ as a
+two dimensional array with elements $a_{m,k}$, with as previously the $M$ field
+envelopes along the row and the discrete samples in normalized and dimensionless
+time $s_k$ along the columns,
+$$
+  \eqalign{
+  {\bf a}(\zeta)
+    &=\pmatrix{
+        a_0(\zeta,s_0)&a_0(\zeta,s_1)&a_0(\zeta,s_2)&\cdots&a_0(\zeta,s_{N-1})\cr
+        a_1(\zeta,s_0)&a_1(\zeta,s_1)&a_1(\zeta,s_2)&\cdots&a_1(\zeta,s_{N-1})\cr
+        a_2(\zeta,s_0)&a_2(\zeta,s_1)&a_2(\zeta,s_2)&\cdots&a_2(\zeta,s_{N-1})\cr
+        \vdots & \vdots & \vdots & \ddots & \vdots\cr
+        a_{M-1}(\zeta,s_0)&a_{M-1}(\zeta,s_1)&a_{M-1}(\zeta,s_2)&\cdots&a_{M-1}(\zeta,s_{N-1})\cr
+      }\cr
+    &=\pmatrix{
+        a_{0,0}&a_{0,1}&a_{0,2}&\cdots&a_{0,N-1}\cr
+        a_{1,0}&a_{1,1}&a_{1,2}&\cdots&a_{1,N-1}\cr
+        a_{2,0}&a_{2,1}&a_{2,2}&\cdots&a_{2,N-1}\cr
+        \vdots & \vdots & \vdots & \ddots & \vdots\cr
+        a_{M-1,0}&a_{M-1,1}&a_{M-1,2}&\cdots&a_{M-1,N-1}\cr
+      },\cr
+    }
+  \eqdef{eq:numsol0-20}
+$$
+that is to say, ${\bf a}\in{\fam\bbb R}^{[M\times N]}$. With reference to the
+Fourier transform appearing in the interpretation of dispersion in the scalar
+example of Eq.~\eqref{eq:analogy70}, we will hence in the following apply the
+Fourier transform row-wise of the array ${\bf a}$, separately for each field
+envelope $m=0,1,\ldots,M-1$.
+
+Typically, for a pulse having its peak occurring at normalized time $s=0$, we
+would need a set of time samples properly covering the pulse before (negative
+time) and after (positive time) this peak. Hence, if we assume a symmetric
+coverage around the normalized time $s=0$ of its launch, we may for an even
+number of samples, say $N=2^p$ for some positive integer $p$ (just to ensure
+an efficient fast Fourier transform in what is to come), and with a uniform
+time step $\Delta s$
+choose\numberedfootnote{Sanity check: $s_0=-(N-1)\Delta s/2$ and
+  $s_{N-1}=(N-1)\Delta s/2$, symmetrically placed around the centre
+  normalized and dimensionless time $s=0$ as expected.}
+$$
+  s_k=\bigg(k-{{(N-1)}\over{2}}\bigg)\Delta s,\quad
+  k=0,1,\ldots,N-1,
+  \eqdef{eq:numsol0-30}
+$$
+spanning the interval $s_{N-1}-s_0=(N-1)\Delta s$ from start to stop.
+At these discrete samples of normalized time, we initialize the normalized
+field envelopes as described by Eq.~\eqref{eq:numsol0-20} and take this as
+our starting point for $\zeta=0$.
+
+For a set of $N=2^p$ samples of normalized and dimensionless time, we will have
+an associated set of $N$ samples of the corresponding normalized angular
+frequency, which we for simplicity will denote by $\omega_k$. (Despite that we
+usually reserve $\omega$ as symbol for the ``real'' angular frequency with
+physical unit of rad/s.)
+Used in context of a Fast Fourier Transform (FFT) over $N$ samples $s_k$
+in normalized and dimensionless time, the associated angular frequencies
+are\numberedfootnote{The ordering of these frequencies depends on the
+  programming language of choice. An array of frequencies from a given
+  $\Delta s$ and number of samples $N$ can with Python's scientific
+  library {\tt scipy.fftpack} be obtained by {\tt fftshift(fftfreq(N,d=ds))},
+  with ${\tt N}\equiv N$ and ${\tt ds}\equiv \Delta s$.}
+$$
+  \omega_k = 2\pi k f_{\rm s}/N,\qquad k=0,1,\ldots,N,
+$$
+where $f_{\rm s}=1/\Delta s$ is the (normalized and dimensionless) temporal
+sample rate of the signal. As we in the dispersive step of propagation will
+make use of the Fourier-transformed properties of derivatives, replacing the
+derivatives $\partial/\partial s$ in normalized time by multiplication by
+$-i\omega$, we will in the initialization step pre-compute these angular
+frequencies, as well as all powers $w^n_k$ needed to cover the highest
+time-derivative present in the dispersive operator.
+
+{\bf [Step 1 -- nonlinear propagation]} As the first step, we ignore the
+dispersive operator and set it to zero,
+$$
+  \hat{\fam\bbb D}={\bf 0}
+  \qquad\Rightarrow\qquad
+  {{\partial{\bf a}}\over{\partial\zeta}} = \hat{\fam\bbb N}{\bf a}.
+  \eqdef{eq:numsol80}
+$$
+In other words, sort of pretend that we are dealing with an ordinary
+differential equation (ODE) in one single variable $\zeta$, albeit being
+a nonlinear equation in the field envelopes.
+For a sufficiently small step $\Delta\zeta$ in the normalized spatial
+coordinate $\zeta$, we may approximate $\hat{\fam\bbb N}$ by being
+constant over the small interval. In this case, an exact solution to
+Eq.~\eqref{eq:numsol80} becomes
+$$
+  {\bf a}(\zeta+\Delta\zeta,s)
+    =\exp(\hat{\fam\bbb N}\Delta\zeta){\bf a}(\zeta,s),
+  \eqdef{eq:numsol90}
+$$
+in which $\exp(\hat{\fam\bbb N}\Delta\zeta)$ should be interpreted as the
+{\it matrix exponential};\numberedfootnote{In analogy with the classic,
+  scalar exponential function, the {\it matrix exponential} of a matrix
+  $\fam\bbb X$ can be defined as
+  $$
+    \exp({\fam\bbb X})=\sum^{\infty}_{n=0}{{1}\over{n!}}{\fam\bbb X}^n,
+  $$
+  where the first term ${\fam\bbb X}^0={\fam\bbb I}$ as usually is to be
+  interpreted as the identity matrix.
+  See, for example, {\tt https://mathworld.wolfram.com/MatrixExponential.html}
+  or the excellent episode {\it A Number to the Power of a Matrix} by
+  Numberphile on Youtube at {\tt https://www.youtube.com/watch?v=CHozRTwHInE}}
+that is to say, {\it not} as the common element-wise exponential. Notice that
+this exponential involves the envelopes of the fields present at the current
+position $\zeta$, and will change over the course of simulation; hence the
+exponential accordingly will need to be re-computed for each step, and cannot
+in general be pre-computed.
+
+\numberedfootnote{Notice that we here define the temporal Fourier
+  transform $f(\omega)$ and its inverse $f(t)$ by
+  $$
+    \eqalignno{
+      f(\omega)&=\fourier[f(t)]
+        ={{1}\over{2\pi}}
+        \int^{\infty}_{-\infty}f(\tau)\exp(i\omega\tau)\,d\tau,
+        \eqdefn{eq:fourier10}&\eqsubdef{eq:fourier10a}\cr
+      f(t)&=\fourier^{-1}[f(\omega)]
+        =\int^{\infty}_{-\infty}f(\omega)\exp(-i\omega t)\,d\omega,
+        &\eqsubdef{eq:fourier10b}\cr
+    }
+  $$
+  conforming to the standard notation in optics, say Born and
+  Wolf.\numberedfootnote{Max Born and Emil Wolf, {\it Principles of Optics},
+  7th Edn.~(Cambridge University Press, 1999). ISBN 978-0521642224.}
+  Notice that by using this convention, derivatives in time will appear
+  with a {\it negative} ``$-i\omega$'' factor in the Fourier domain as
+  $$
+    \fourier\Big[{{\partial f(t)}\over{\partial t}}\Big]
+    =-i\omega\fourier[f(t)].
+  $$
+}
+\vfill\eject
+
+\section{Example gallery of pulsed colinear OPA}
+\subsection{Parameters used in the simulation}
+The definition of the normalized length used in the simulation is from
+Eq.~\eqref{eq:waveeq310},
+$$
+  \zeta = |k''_3|z/\tau^2,\qquad
+  s=(t-k'_3 z)/\tau,
+$$
+interlinking the physical propagation length $z_{\rm max}$, pulse duration $\tau$
+and group velocity dispersion parameter $|k''_3|$ for the pump.
+For a choice of a physical propagation length of $z_{\rm max}=10\ {\rm mm}$ and a
+pulse duration of $\tau=10\ {\rm ps}=10\times10^{-12}\ {\rm s}$ for the pump,
+which also is used as a reference for the idler and signal, a range of
+$\zeta_{\rm max}=1$ for the normalized length corresponds to a group dispersion
+parameter of $|k''_3|=10.0\times10^{-21}\ {\rm s}^2/{\rm m}$.
+In this respect, the group dispersion parameter is highly unknown, but we choose
+this value as reference. In any case, we may just as well choose a longer pulse
+duration $\tau$ in case that the chosen group velocity dispersion parameter
+$|k''_3|$ is found to be too low for a real medium.
+
+For the initial pulses, we choose these all as linearly polarized, and we further choose normalized amplitudes for the fields of Eq.~\eqref{eq:waveeq370} as
+$\max(\tilde{a}^{f\pm}_{\omega_1}(\zeta,0))=0$ for the idler,
+$\max(\tilde{a}^{f\pm}_{\omega_2}(\zeta,0))=0.5$ for the signal, and
+$\max(\tilde{a}^{f\pm}_{\omega_3}(\zeta,0))=2.5$ for the pump. Notice that these are amplitudes, hence the intensity measures of these go as the respective {\it squares} of these amplitudes.
+The corresponding initial pulse widths are all chosen equal as 10~ps, and the pulses are also of ${\rm sech}(\ldots)$-shape.
+
+For the practical implementation of the simulation, step parameters of
+$N_{\zeta}=4001$, $\Delta\zeta=0.0005$ for the discretized normalized spatial step in $\zeta$, and $N_s=2^{11}$, $\Delta s=0.01$ for the dicretized normalized ``time'' $s$.
+
+We continue with the definition of the dispersion parameters of the dispersive
+$\hat{D}$ operator.
+Notice that the sign of the group-velocity dispersion parameters $k''_j=d^2 k_k/d\omega^2>0$, a long-wavelength, or equivalently low-frequency, pulse travels faster than a short-wavelength, or high-frequency, pulse.
+Notice that the group velocity dispersion parameter $|k''_3|$ for the pump {\it always needs to be non-zero}, due to the way that the normalization of the system of PDE:s is constructed.
+
+The electric-dipolar part of group velocity parameters $k'_j$ is for the pump taken as $k'_3 = 5.0\times10^{-9}\ {\rm s}/{\rm m}$, corresponding to a group velocity of $2/3$ of the speed or light ($v_{g,3}=1/k'_3 = 2.0\times10^8\ {\rm m}/{\rm s}$), or equivalently with a reasonable group velocity index of $n_{g}=1.5$.
+For the idler and signal pulses, we assume that these travel at a speed roughly 5 percent faster than the pump, hence with $k'_1 = k'_2 = 0.95\times k'_3$, hence with group velocities $v_{g,1}=v_{g,2}\approx 1.05\times v_{g,3}$.
+
+For the electric-dipolar part of group velocity dispersion parameters $k''_j$ for the idler, signal and pump, we all chose these as equal, with value $k''_1 =k''_2 =k''_3 =d(k'_3)/d\omega=10\times10^{-21}\ {\rm s}^2/{\rm m}$. Again, please notice that $k''_3$ always must be non-zero, due to the way that the normlization of the coupled OPA system is constructed.
+
+For the chiral differential corrections/contributions $a_j$ to the group velocity parameters $a'_j$ for idler, signal and pump, we choose these such that $a'_1=0.15\times k'_1\ {\rm s}/{\rm m}$. For the moment, this is probably an unrealistically high value, but we will currently use this for illustration of the differential group velocity between LCP/RCP modes.
+
+As for the chiral differential corrections/contributions to the group velocity dispersion parameters $a''_j$ for idler, signal and pump, we choose all these as zero for the moment, as these are not the primary parameters of interest. In other words, $a''_1=a''_1=a''_1=0\ {\rm s}^2/{\rm m}$.
+
+Finally, for the phase mismatch, we pick values $\delta k=100.0\ {\rm m}^{-1}$
+and $\delta\alpha=200.0\ {\rm m}^{-1}$, resulting in a normalized phase mismatch from Eq.~\eqref{eq:waveeq350} of
+$$
+  \Delta\phi_{\pm}\equiv(\Delta k\pm\Delta\alpha) \tau^2/|k''_3|
+     ={{(10\times10^{-12})^2\ {\rm s}^2}
+        \over{10.0\times10^{-21}\ {\rm s}^2/{\rm m}}}
+      \times((100.0\pm 200.0)\ {\rm m}^{-1})
+      =\cases{3.0&\cr -1.0&}
+$$
+The behaviour of this system is illustrated in the following next sections.
+\vfill\eject
+
+\subsection{Pulse propagation with $\Delta\alpha=0$}
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-1-stoke-s0.eps}}
+\noindent
+{\captionwide{\bf Figure~1.} Normalized Stokes parameter
+  $S_0=|a^{f+}_{\omega_j}|^2+|a^{f-}_{\omega_j}|^2$ (total intensity) for
+  the idler, signal and pump pulses, resolved in normalized time
+  $s=(t-k'_3 z)/\tau$ and along normalized spatial coordinate
+  $\zeta=|k''_3|z/\tau^2$, in the case where $\Delta\alpha=0\ {\rm m}^{-1}$.}
+\bigskip
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-1-stoke-s3.eps}}
+\noindent
+{\captionwide{\bf Figure~2.} The corresponding normalized Stokes parameter
+  $S_3=(|a^{f+}_{\omega_j}|^2+|a^{f-}_{\omega_j}|^2)/S_0$ (ellipticity) for the
+  idler, signal and pump pulses, corresponding to the same parameters as
+  in Fig.~1.}
+\vfill\eject
+
+\subsection{Pulse propagation with $\Delta\alpha>0$}
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-2-stoke-s0.eps}}
+\noindent
+{\captionwide{\bf Figure~3.} Identical parameters as for Fig.~1, with exception
+  for a non-zero and positive $\Delta\alpha=200\ {\rm m}^{-1}$.}
+\bigskip
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-2-stoke-s3.eps}}
+\noindent
+{\captionwide{\bf Figure~4.} The corresponding normalized Stokes parameter
+  $S_3=(|a^{f+}_{\omega_j}|^2+|a^{f-}_{\omega_j}|^2)/S_0$ (ellipticity) for the
+  idler, signal and pump pulses, corresponding to the same parameters as
+  in Fig.~3.}
+\vfill\eject
+
+\subsection{Pulse propagation with $\Delta\alpha>0$}
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-3-stoke-s0.eps}}
+\noindent
+{\captionwide{\bf Figure~5.} Identical parameters as for Figs.~1 and~3, with
+  exception for a non-zero and negative $\Delta\alpha=-200\ {\rm m}^{-1}$.}
+\bigskip
+\centerline{\epsfxsize=246pt\epsfbox{figs/figure-3-stoke-s3.eps}}
+\noindent
+{\captionwide{\bf Figure~6.} The corresponding normalized Stokes parameter
+  $S_3=(|a^{f+}_{\omega_j}|^2+|a^{f-}_{\omega_j}|^2)/S_0$ (ellipticity) for the
+  idler, signal and pump pulses, corresponding to the same parameters as
+  in Fig.~5.}
+\vfill\eject
+
+\bye
